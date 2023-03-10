@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-build/cmake_install.cmake")
+  include("C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/boid-build/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)

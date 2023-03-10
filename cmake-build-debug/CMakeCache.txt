@@ -320,10 +320,17 @@ FETCHCONTENT_QUIET:BOOL=ON
 
 //When not empty, overrides where to find pre-populated content
 // for Boid
+FETCHCONTENT_SOURCE_DIR_BOID:PATH=
+
+//When not empty, overrides where to find pre-populated content
+// for Boid
 FETCHCONTENT_SOURCE_DIR_P6:PATH=
 
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
+
+//Enables UPDATE_DISCONNECTED behavior just for population of Boid
+FETCHCONTENT_UPDATES_DISCONNECTED_BOID:BOOL=OFF
 
 //Enables UPDATE_DISCONNECTED behavior just for population of Boid
 FETCHCONTENT_UPDATES_DISCONNECTED_P6:BOOL=OFF
@@ -332,7 +339,7 @@ FETCHCONTENT_UPDATES_DISCONNECTED_P6:BOOL=OFF
 GIT_EXECUTABLE:FILEPATH=C:/Program Files/Git/cmd/git.exe
 
 //Value Computed by CMake
-GLFW_BINARY_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/Boid-build/third-party/glfw
+GLFW_BINARY_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/boid-build/third-party/glfw
 
 //Build the GLFW documentation
 GLFW_BUILD_DOCS:BOOL=ON
@@ -357,7 +364,7 @@ GLFW_IS_TOP_LEVEL:STATIC=OFF
 GLFW_LIBRARY_TYPE:STRING=
 
 //Value Computed by CMake
-GLFW_SOURCE_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/Boid-src/third-party/glfw
+GLFW_SOURCE_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/boid-src/third-party/glfw
 
 //Force use of high-performance GPU on hybrid systems
 GLFW_USE_HYBRID_HPG:BOOL=OFF
@@ -384,13 +391,13 @@ WARNINGS_AS_ERRORS_FOR_GLPP:BOOL=OFF
 WARNINGS_AS_ERRORS_FOR_GLPP_EXTENDED:BOOL=OFF
 
 //Value Computed by CMake
-glm_BINARY_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/Boid-build/third-party/glpp-extended/lib/glm
+glm_BINARY_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/boid-build/third-party/glpp-extended/lib/glm
 
 //Value Computed by CMake
 glm_IS_TOP_LEVEL:STATIC=OFF
 
 //Value Computed by CMake
-glm_SOURCE_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/Boid-src/third-party/glpp-extended/lib/glm
+glm_SOURCE_DIR:STATIC=C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/boid-src/third-party/glpp-extended/lib/glm
 
 //Dependencies for the target
 glpp-extended_LIB_DEPENDS:STATIC=general;glpp::glpp;

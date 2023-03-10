@@ -1,0 +1,388 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						2,
+						3
+					]
+				},
+				{
+					"build" : "_deps/boid-build",
+					"childIndexes" : 
+					[
+						2,
+						6,
+						7,
+						8,
+						9,
+						11
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.boid-build-Debug-64d2332678e536249876.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "cmake-build-debug/_deps/boid-src",
+					"targetIndexes" : 
+					[
+						10
+					]
+				},
+				{
+					"build" : "_deps/boid-build/third-party/glpp-extended",
+					"childIndexes" : 
+					[
+						3,
+						4
+					],
+					"jsonFile" : "directory-_deps.boid-build.third-party.glpp-extended-Debug-2a435c74f5d59e25fbd8.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/glpp-extended",
+					"targetIndexes" : 
+					[
+						8
+					]
+				},
+				{
+					"build" : "_deps/boid-build/third-party/glpp-extended/lib/glpp",
+					"jsonFile" : "directory-_deps.boid-build.third-party.glpp-extended.lib.glpp-Debug-ba1ebcf2dfec1fb7601c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 0,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/glpp-extended/lib/glpp",
+					"targetIndexes" : 
+					[
+						5,
+						7
+					]
+				},
+				{
+					"build" : "_deps/boid-build/third-party/glpp-extended/lib/glm",
+					"childIndexes" : 
+					[
+						5
+					],
+					"jsonFile" : "directory-_deps.boid-build.third-party.glpp-extended.lib.glm-Debug-db82d211dda1ac3f12c2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.2"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/glpp-extended/lib/glm",
+					"targetIndexes" : 
+					[
+						12
+					]
+				},
+				{
+					"build" : "_deps/boid-build/third-party/glpp-extended/lib/glm/glm",
+					"jsonFile" : "directory-_deps.boid-build.third-party.glpp-extended.lib.glm.glm-Debug-630b2fe1dc0fdeafb414.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.2"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 1,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/glpp-extended/lib/glm/glm"
+				},
+				{
+					"build" : "_deps/boid-build/third-party/img",
+					"jsonFile" : "directory-_deps.boid-build.third-party.img-Debug-ad502769d28587f5a26c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/img",
+					"targetIndexes" : 
+					[
+						9,
+						11
+					]
+				},
+				{
+					"build" : "_deps/boid-build/third-party/op",
+					"jsonFile" : "directory-_deps.boid-build.third-party.op-Debug-00b575fb3b783c0ca98a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/op"
+				},
+				{
+					"build" : "_deps/boid-build/third-party/exe_path",
+					"jsonFile" : "directory-_deps.boid-build.third-party.exe_path-Debug-99b8034d768670e9581f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/exe_path",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "_deps/boid-build/third-party/glfw",
+					"childIndexes" : 
+					[
+						10
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.boid-build.third-party.glfw-Debug-319f1eb3f5f8fd4b16b2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/glfw"
+				},
+				{
+					"build" : "_deps/boid-build/third-party/glfw/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.boid-build.third-party.glfw.src-Debug-b6a6568f341ea274ac14.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 2,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/glfw/src",
+					"targetIndexes" : 
+					[
+						6,
+						13
+					]
+				},
+				{
+					"build" : "_deps/boid-build/third-party/imgui",
+					"jsonFile" : "directory-_deps.boid-build.third-party.imgui-Debug-1398184b46f1fb4a9793.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "cmake-build-debug/_deps/boid-src/third-party/imgui",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						6,
+						7,
+						8,
+						11
+					],
+					"name" : "OpenGL-TPs-Template",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						7,
+						8,
+						9,
+						10,
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4,
+						5
+					],
+					"name" : "glm",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9,
+						10
+					],
+					"name" : "GLFW",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6,
+						13
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Boid_exe::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Boid_exe-Debug-b5a7080d2cb60c06656d.json",
+					"name" : "Boid_exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "ImGui::@ecbb7b6b3d88aca1faca",
+					"jsonFile" : "target-ImGui-Debug-0a486016a41c2fad51ae.json",
+					"name" : "ImGui",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "TP3_exo1_triangle_blanc_exe::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TP3_exo1_triangle_blanc_exe-Debug-07913702f5edecae9095.json",
+					"name" : "TP3_exo1_triangle_blanc_exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "TP3_exo2_triangle_couleurs_exe::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-TP3_exo2_triangle_couleurs_exe-Debug-5a5fb5bd4ea3538bfa0c.json",
+					"name" : "TP3_exo2_triangle_couleurs_exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "exe_path::@25b46f015d02e1dd367b",
+					"jsonFile" : "target-exe_path-Debug-43435cee792fe80a7438.json",
+					"name" : "exe_path",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glad::@e984d543a4b82ff5f110",
+					"jsonFile" : "target-glad-Debug-0df73941049e63041587.json",
+					"name" : "glad",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "glfw::@5f021d17911d67678a90",
+					"jsonFile" : "target-glfw-Debug-8dc5c22262b8dd90b50f.json",
+					"name" : "glfw",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glpp::@e984d543a4b82ff5f110",
+					"jsonFile" : "target-glpp-Debug-507181e0f4d65491bd5b.json",
+					"name" : "glpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "glpp-extended::@0b0607bf1de7e21ad178",
+					"jsonFile" : "target-glpp-extended-Debug-159a09d08571ea850e06.json",
+					"name" : "glpp-extended",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "img::@c7d7a641968b48f7e91b",
+					"jsonFile" : "target-img-Debug-daf53c42ac538aa32cb8.json",
+					"name" : "img",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "p6::@a706ac3c595639b60864",
+					"jsonFile" : "target-p6-Debug-84460b20dddf85539822.json",
+					"name" : "p6",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "stb_image::@c7d7a641968b48f7e91b",
+					"jsonFile" : "target-stb_image-Debug-5a42f4190863b7a00450.json",
+					"name" : "stb_image",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "uninstall::@1a37ac8a79e5e7b10f8a",
+					"jsonFile" : "target-uninstall-Debug-f6527f3750f3620a2024.json",
+					"name" : "uninstall",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "update_mappings::@5f021d17911d67678a90",
+					"jsonFile" : "target-update_mappings-Debug-fa6166c1034bca92ce94.json",
+					"name" : "update_mappings",
+					"projectIndex" : 2
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug",
+		"source" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
