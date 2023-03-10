@@ -4,14 +4,14 @@ cmake_minimum_required(VERSION 3.20)
 # ---Choose project name---
 project(OpenGL-TPs-Template)
 
-# ---Add p6 library---
+# ---Add Boid library---
 include(FetchContent)
 FetchContent_Declare(
-    p6
+        Boid
     GIT_REPOSITORY https://github.com/julesfouchy/p6
     GIT_TAG b9e6366e1198abdd7bc835e6125f9ff5b89a75b8
 )
-FetchContent_MakeAvailable(p6)
+FetchContent_MakeAvailable(Boid)
 
 # ---Create a target for each exercise---
 function(add_exercise EXERCISE_NAME)
@@ -34,7 +34,7 @@ function(add_exercise EXERCISE_NAME)
     target_sources(${TARGET_NAME} PRIVATE ${EXERCISE_FILES} ${COMMON_FILES})
     target_include_directories(${TARGET_NAME} PRIVATE ${EXERCISE_FILES} src-common)
 
-    # ---Link p6 library---
+    # ---Link Boid library---
     target_link_libraries(${TARGET_NAME} PRIVATE p6::p6)
 
     # ---Set the output folder---
@@ -48,3 +48,4 @@ endfunction(add_exercise)
 
 add_exercise(TP3_exo1_triangle_blanc)
 add_exercise(TP3_exo2_triangle_couleurs)
+add_exercise(Boid)

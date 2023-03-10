@@ -1,4 +1,4 @@
-# Install script for directory: C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild
+# Install script for directory: C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/Boid-subbuild
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

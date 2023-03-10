@@ -2,7 +2,7 @@
 
 int main()
 {
-    auto ctx = p6::Context{{1280, 720, "TP3 EX2"}};
+    auto ctx = p6::Context{{1280, 720, "Boid"}};
     ctx.maximize_window();
 
     /*********************************
