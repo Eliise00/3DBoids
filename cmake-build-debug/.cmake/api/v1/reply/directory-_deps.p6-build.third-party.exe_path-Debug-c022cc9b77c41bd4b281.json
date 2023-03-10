@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "_deps/p6-build/third-party/exe_path",
+		"source" : "cmake-build-debug/_deps/p6-src/third-party/exe_path"
+	}
+}

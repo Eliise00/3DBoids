@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/CMakeFiles/p6-populate"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/CMakeFiles/p6-populate.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/CMakeFiles/p6-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-build.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-download.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-install.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-test.rule"
+		},
+		{
+			"file" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/cmake-build-debug/_deps/p6-subbuild/p6-populate-prefix/src/p6-populate-stamp/p6-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"p6-populate"
+		],
+		"name" : "p6-populate"
+	}
+}
