@@ -6,11 +6,13 @@
 
 class Boid {
 private:
+
     glm::vec2 _pos;
     p6::Angle _dir;
     float     _speed;
     float     _radius;
     float _aspect_ratio;
+
 
 
 public:

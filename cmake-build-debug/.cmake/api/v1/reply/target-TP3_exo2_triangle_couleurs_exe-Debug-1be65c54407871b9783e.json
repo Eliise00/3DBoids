@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/bin/TP3_exo1_triangle_blanc/TP3_exo1_triangle_blanc_exe.exe"
+			"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/bin/TP3_exo2_triangle_couleurs/TP3_exo2_triangle_couleurs_exe.exe"
 		},
 		{
-			"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/bin/TP3_exo1_triangle_blanc/TP3_exo1_triangle_blanc_exe.pdb"
+			"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/bin/TP3_exo2_triangle_couleurs/TP3_exo2_triangle_couleurs_exe.pdb"
 		}
 	],
 	"backtrace" : 2,
@@ -41,7 +41,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 49,
+				"line" : 50,
 				"parent" : 0
 			},
 			{
@@ -220,6 +220,84 @@
 				"file" : 6,
 				"line" : 20,
 				"parent" : 32
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 46,
+				"parent" : 1
+			},
+			{
+				"command" : 7,
+				"file" : 6,
+				"line" : 66,
+				"parent" : 34
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 42,
+				"parent" : 35
+			},
+			{
+				"command" : 5,
+				"file" : 6,
+				"line" : 20,
+				"parent" : 36
+			},
+			{
+				"command" : 7,
+				"file" : 6,
+				"line" : 66,
+				"parent" : 34
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 42,
+				"parent" : 38
+			},
+			{
+				"command" : 5,
+				"file" : 6,
+				"line" : 20,
+				"parent" : 39
+			},
+			{
+				"command" : 7,
+				"file" : 6,
+				"line" : 66,
+				"parent" : 34
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 42,
+				"parent" : 41
+			},
+			{
+				"command" : 5,
+				"file" : 6,
+				"line" : 20,
+				"parent" : 42
+			},
+			{
+				"command" : 7,
+				"file" : 6,
+				"line" : 66,
+				"parent" : 34
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 42,
+				"parent" : 44
+			},
+			{
+				"command" : 5,
+				"file" : 6,
+				"line" : 20,
+				"parent" : 45
 			}
 		]
 	},
@@ -259,7 +337,23 @@
 			[
 				{
 					"backtrace" : 19,
-					"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo1_triangle_blanc/main.cpp"
+					"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/main.cpp"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/color2D.fs.glsl"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/color2D.vs.glsl"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/triangle.fs.glsl"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/triangle.vs.glsl"
 				},
 				{
 					"backtrace" : 19,
@@ -322,9 +416,9 @@
 			"sourceIndexes" : 
 			[
 				0,
-				2,
-				4,
-				6
+				6,
+				8,
+				10
 			]
 		}
 	],
@@ -336,11 +430,11 @@
 		},
 		{
 			"backtrace" : 3,
-			"id" : "glpp::@e984d543a4b82ff5f110"
+			"id" : "glpp-extended::@0b0607bf1de7e21ad178"
 		},
 		{
 			"backtrace" : 3,
-			"id" : "glpp-extended::@0b0607bf1de7e21ad178"
+			"id" : "glpp::@e984d543a4b82ff5f110"
 		},
 		{
 			"backtrace" : 3,
@@ -356,18 +450,18 @@
 		},
 		{
 			"backtrace" : 3,
-			"id" : "exe_path::@25b46f015d02e1dd367b"
+			"id" : "glfw::@5f021d17911d67678a90"
 		},
 		{
 			"backtrace" : 3,
-			"id" : "glfw::@5f021d17911d67678a90"
+			"id" : "exe_path::@25b46f015d02e1dd367b"
 		},
 		{
 			"backtrace" : 3,
 			"id" : "ImGui::@ecbb7b6b3d88aca1faca"
 		}
 	],
-	"id" : "TP3_exo1_triangle_blanc_exe::@6890427a1f51a3e7e1df",
+	"id" : "TP3_exo2_triangle_couleurs_exe::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -437,8 +531,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "TP3_exo1_triangle_blanc_exe",
-	"nameOnDisk" : "TP3_exo1_triangle_blanc_exe.exe",
+	"name" : "TP3_exo2_triangle_couleurs_exe",
+	"nameOnDisk" : "TP3_exo2_triangle_couleurs_exe.exe",
 	"paths" : 
 	{
 		"build" : ".",
@@ -451,28 +545,36 @@
 			"sourceIndexes" : 
 			[
 				0,
-				2,
-				4,
-				6
-			]
-		},
-		{
-			"name" : "Header Files",
-			"sourceIndexes" : 
-			[
-				1,
-				3,
-				5,
-				7
+				6,
+				8,
+				10
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				8,
+				1,
+				2,
+				3,
+				4,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				5,
+				7,
 				9,
-				10,
 				11
 			]
 		},
@@ -480,10 +582,14 @@
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				12,
-				13,
-				14,
-				15
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27
 			]
 		}
 	],
@@ -492,13 +598,33 @@
 		{
 			"backtrace" : 20,
 			"compileGroupIndex" : 0,
-			"path" : "TP3_exo1_triangle_blanc/main.cpp",
+			"path" : "TP3_exo2_triangle_couleurs/main.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 20,
-			"path" : "src-common/glimac/common.hpp",
+			"path" : "TP3_exo2_triangle_couleurs/shaders/color2D.fs.glsl",
 			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 20,
+			"path" : "TP3_exo2_triangle_couleurs/shaders/color2D.vs.glsl",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 20,
+			"path" : "TP3_exo2_triangle_couleurs/shaders/triangle.fs.glsl",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 20,
+			"path" : "TP3_exo2_triangle_couleurs/shaders/triangle.vs.glsl",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 20,
+			"path" : "src-common/glimac/common.hpp",
+			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 20,
@@ -509,7 +635,7 @@
 		{
 			"backtrace" : 20,
 			"path" : "src-common/glimac/cone_vertices.hpp",
-			"sourceGroupIndex" : 1
+			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 20,
@@ -520,7 +646,7 @@
 		{
 			"backtrace" : 20,
 			"path" : "src-common/glimac/default_shader.hpp",
-			"sourceGroupIndex" : 1
+			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 20,
@@ -531,54 +657,102 @@
 		{
 			"backtrace" : 20,
 			"path" : "src-common/glimac/sphere_vertices.hpp",
-			"sourceGroupIndex" : 1
+			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 24,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_10717650fd31e0746c551ece60804cce",
-			"sourceGroupIndex" : 2
+			"path" : "cmake-build-debug/timestamp_2b9848400ac16b129f4f4c194a29047c",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 27,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_15adba185d51faafd65c478d29131af0",
-			"sourceGroupIndex" : 2
+			"path" : "cmake-build-debug/timestamp_35319321d9bb8b0f8116ea0a1c0660ea",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 30,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_6999033dad4e593b5f6c023e54e965ec",
-			"sourceGroupIndex" : 2
+			"path" : "cmake-build-debug/timestamp_56d1b214f38836f9e59c161e325ccef4",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 33,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_1d910877117fc4b5a1a0af43d0452687",
-			"sourceGroupIndex" : 2
+			"path" : "cmake-build-debug/timestamp_73fbf33f817e7c2dd342d059e4819677",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 37,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_3fbf258934d610875192bb8365ef462a",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 40,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_0b9fd5a25ad5d08750b656f15a7ecf7e",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 43,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_c83c098e36f436804938c335f5eb53f9",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 46,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_7bb64640b054b3626b39939e24672b4f",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_10717650fd31e0746c551ece60804cce.rule",
+			"path" : "cmake-build-debug/timestamp_2b9848400ac16b129f4f4c194a29047c.rule",
 			"sourceGroupIndex" : 3
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_15adba185d51faafd65c478d29131af0.rule",
+			"path" : "cmake-build-debug/timestamp_35319321d9bb8b0f8116ea0a1c0660ea.rule",
 			"sourceGroupIndex" : 3
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_6999033dad4e593b5f6c023e54e965ec.rule",
+			"path" : "cmake-build-debug/timestamp_56d1b214f38836f9e59c161e325ccef4.rule",
 			"sourceGroupIndex" : 3
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/timestamp_1d910877117fc4b5a1a0af43d0452687.rule",
+			"path" : "cmake-build-debug/timestamp_73fbf33f817e7c2dd342d059e4819677.rule",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_3fbf258934d610875192bb8365ef462a.rule",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_0b9fd5a25ad5d08750b656f15a7ecf7e.rule",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_c83c098e36f436804938c335f5eb53f9.rule",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/timestamp_7bb64640b054b3626b39939e24672b4f.rule",
 			"sourceGroupIndex" : 3
 		}
 	],

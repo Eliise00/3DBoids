@@ -44,6 +44,8 @@ endif()
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/*")
 set(OLD_GLOB
   "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/main.cpp"
+  "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/color2D.fs.glsl"
+  "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/color2D.vs.glsl"
   "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/triangle.fs.glsl"
   "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/triangle.vs.glsl"
   )
@@ -55,6 +57,8 @@ endif()
 # FILES at cmake-build-debug/_deps/boid-src/third-party/CMakeUtils/files_and_folders.cmake:61 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/*")
 set(OLD_GLOB
+  "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/color2D.fs.glsl"
+  "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/color2D.vs.glsl"
   "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/triangle.fs.glsl"
   "C:/Documents/IMAC2/S4/Projet_OpenGL_p6/3DBoids/TP3_exo2_triangle_couleurs/shaders/triangle.vs.glsl"
   )
