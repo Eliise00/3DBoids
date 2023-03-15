@@ -1,61 +1,70 @@
-#include "p6/p6.h"
 #include <cstdlib>
 #include <random>
-#define DOCTEST_CONFIG_IMPLEMENT
+#include "p6/p6.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT
 
 class Boid {
 private:
-
     glm::vec2 _pos;
     glm::vec2 _speed;
     p6::Angle _dir;
     float     _radius;
-    float _aspect_ratio;
+    float     _aspect_ratio;
+
+    float _cohesion_radius;
+    float _max_speed;
 
 public:
-
-
     explicit Boid(float aspect_ratio)
-        :
-        _pos(glm::vec2(p6::random::number(-aspect_ratio, aspect_ratio), p6::random::number(-1, 1))), // remplace seed avec la doc de p6
-        _speed(p6::random::number() / 2000, p6::random::number() / 2000),
-        _dir(p6::Angle(p6::Radians(p6::random::number(p6::PI * 2)))),
-        _radius(0.01),
-        _aspect_ratio(aspect_ratio)
+        : _pos(glm::vec2(p6::random::number(-aspect_ratio, aspect_ratio), p6::random::number(-1, 1))), // remplace seed avec la doc de p6
+        _speed(.001, 0.001)
+        , _dir(p6::Angle(p6::Radians(p6::random::number(p6::PI * 2))))
+        , _radius(0.01)
+        , _aspect_ratio(aspect_ratio)
+        , _cohesion_radius(0.04)
+        , _max_speed(0.001)
     {
     }
 
-
     void draw(p6::Context& ctx) const
     {
+        ctx.stroke_weight = 0.005f;
+        ctx.use_stroke    = false;
+        ctx.use_fill      = true;
         ctx.circle(
             p6::Center{_pos.x, _pos.y},
             p6::Radius{_radius}
         );
-
-        ctx.use_stroke = false;
-
+        ctx.use_stroke = true;
+        ctx.use_fill   = false;
+        ctx.circle(
+            p6::Center{_pos.x, _pos.y},
+            p6::Radius{_cohesion_radius}
+        );
     }
 
     //// collision
     bool collides_with(const Boid& other) const
     {
-        return glm::distance(_pos, other._pos) < (_radius + other._radius); //sqrt((_pos.x - other._pos.x)^2 + (_pos.y - other._pos.y)^2)
+        return glm::distance(_pos, other._pos) < (_radius + other._radius); // sqrt((_pos.x - other._pos.x)^2 + (_pos.y - other._pos.y)^2)
     }
 
     //// cohésion
     glm::vec2 cohesion(const std::vector<Boid>& boids, float cohesion_radius, float max_speed)
     {
         glm::vec2 center_of_mass(0.0f, 0.0f);
-        int count = 0;
-        for (const auto& other : boids) {
-            if (&other != this && glm::distance(_pos, other._pos) < cohesion_radius) {
+        int       count = 0;
+        for (const auto& other : boids)
+        {
+            if (&other != this && glm::distance(_pos, other._pos) < cohesion_radius)
+            {
                 center_of_mass += other._pos;
                 count++;
             }
         }
-        if (count > 0) {
+        if (count > 0)
+        {
             center_of_mass /= static_cast<float>(count);
             auto desired_velocity = glm::normalize(center_of_mass - _pos) * max_speed;
             return (desired_velocity - _speed);
@@ -63,26 +72,22 @@ public:
         return {0.0f, 0.0f};
     }
 
-
     //// update
     void update(std::vector<Boid>& boids)
     {
-
         auto move = rotated_by(_dir, _speed);
         _pos += move;
-        if(abs(_pos.x) > _aspect_ratio){
+        if (abs(_pos.x) > _aspect_ratio)
             _pos.x = _pos.x * -1;
-        }
-        if(abs(_pos.y) > 1){
+        if (abs(_pos.y) > 1)
             _pos.y = _pos.y * -1;
-        }
-
 
         // Calculate cohesion steering force
-        auto cohesion_force = cohesion(boids, 0.5, 0.001);
+        auto cohesion_force = cohesion(boids, _cohesion_radius, _max_speed);
         _speed += cohesion_force;
-        if (glm::length(_speed) > 0.01) { //calculate the norm of the vector speed
-            _dir = p6::Angle(static_cast<p6::Radians>(glm::atan(_speed.y, _speed.x))); //inverse the argument ???
+        if (glm::length(_speed) > 0.01)
+        {                                                                              // calculate the norm of the vector speed
+            _dir = p6::Angle(static_cast<p6::Radians>(glm::atan(_speed.y, _speed.x))); // inverse the argument ???
         }
 
         /*
@@ -94,11 +99,13 @@ public:
                 _dir += p6::Angle(static_cast<p6::Radians>(glm::atan(diff.y, diff.x)));
             }
         }*/
-
     }
 
+    void setSpeed(float speed)
+    {
+        _speed = {speed, speed};
+    }
 };
-
 
 int main()
 {
@@ -114,27 +121,27 @@ int main()
         Boid_array.push_back(boidTemp);
     }
 
-    auto square_radius = 0.5f;
+    auto  square_radius   = 0.5f;
+    float boidGlobalSpeed = 0.001;
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-
-
         ctx.background(p6::NamedColor::Blue);
 
         ///////RENDER
         // Show a simple window
         ImGui::Begin("Test");
         ImGui::SliderFloat("Square size", &square_radius, 0.f, 1.f);
+        ImGui::SliderFloat("boidGlobalSpeed", &boidGlobalSpeed, 0.0001, 0.002);
         ImGui::End();
         ctx.square(p6::Center{}, p6::Radius{square_radius});
 
         // Draw array
         for (auto& i : Boid_array)
         {
-
             i.draw(ctx);
             i.update(Boid_array);
+            i.setSpeed(boidGlobalSpeed);
         }
     };
 
