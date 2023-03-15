@@ -30,6 +30,7 @@
 *.out
 *.app
 build
+cmake-build-debug
 .cache
 bin
 .vscode

@@ -108,7 +108,7 @@ int main()
     /////INITIALISATION
 
     std::vector<Boid> Boid_array;
-    for (size_t i = 0; i < 100; ++i)
+    for (size_t i = 0; i < 80; ++i)
     {
         Boid boidTemp(ctx.aspect_ratio());
         Boid_array.push_back(boidTemp);
