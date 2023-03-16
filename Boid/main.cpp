@@ -30,7 +30,7 @@ public:
     {
     }
 
-    void draw(p6::Context& ctx, bool show_avoid_circle, bool show_align_circle, float avoid_radius, float align_radius) const
+    void draw(p6::Context& ctx, bool show_avoid_circle, bool show_align_circle) const
     {
         // boid circle
         ctx.use_stroke = false;
@@ -47,7 +47,7 @@ public:
             ctx.use_fill      = false;
             ctx.circle(
                 p6::Center{_pos.x, _pos.y},
-                p6::Radius{avoid_radius}
+                p6::Radius{_avoid_radius}
             );
         }
         // cohesion circle
@@ -58,7 +58,7 @@ public:
             ctx.use_fill      = false;
             ctx.circle(
                 p6::Center{_pos.x, _pos.y},
-                p6::Radius{align_radius}
+                p6::Radius{_align_radius}
             );
         }
     }
@@ -85,7 +85,7 @@ public:
         float calculated_turn_factor  = _turn_factor * speed_multiplier;
         float calculated_avoid_factor = _avoid_factor * speed_multiplier;
         float calculated_align_factor = _align_factor * speed_multiplier;
-        // Right
+        //  Right
         if (_pos.x > aspect_ratio - screen_margin * aspect_ratio)
         {
             _speed.x -= calculated_turn_factor;
@@ -205,10 +205,10 @@ int main()
         // ImGui::SliderFloat("Min Speed", &min_speed, 0, 30);
         // ImGui::SliderFloat("Max Speed", &max_speed, 40, 70);
         ImGui::SliderFloat("Turn factor", &turn_factor, 1, 6);
-        ImGui::SliderFloat("Avoid radius", &avoid_radius, 0, 6);
-        ImGui::SliderFloat("Avoid factor", &avoid_factor, 0, 2);
-        ImGui::SliderFloat("Align radius", &align_radius, 0, 20);
-        ImGui::SliderFloat("Align factor", &align_factor, 0, 6);
+        ImGui::SliderFloat("Avoid radius", &avoid_radius, 0, 32);
+        ImGui::SliderFloat("Avoid factor", &avoid_factor, 0, 12);
+        ImGui::SliderFloat("Align radius", &align_radius, 0, 32);
+        ImGui::SliderFloat("Align factor", &align_factor, 0, 12);
 
         ImGui::Text("Environment");
         ImGui::SliderFloat("Speed multiplier", &speed_multiplier, 1, 10);
@@ -222,13 +222,8 @@ int main()
         // Draw array
         for (auto& i : Boid_array)
         {
-            turn_factor  = turn_factor / 10000;
-            avoid_radius = avoid_radius / 100;
-            avoid_factor = avoid_factor / 1000;
-            align_radius = align_radius / 100;
-            align_factor = align_factor / 1000;
-            i.draw(ctx, show_avoid_circle, show_align_circle, avoid_radius, align_radius);
-            i.updatePosition(ctx.aspect_ratio(), Boid_array, min_speed, max_speed, turn_factor, avoid_radius, avoid_factor, align_radius, align_factor, speed_multiplier, screen_margin);
+            i.draw(ctx, show_avoid_circle, show_align_circle);
+            i.updatePosition(ctx.aspect_ratio(), Boid_array, min_speed / 10000, max_speed / 10000, turn_factor / 10000, avoid_radius / 100, avoid_factor / 1000, align_radius / 100, align_factor / 1000, speed_multiplier, screen_margin);
             // il faut améliorer la fonction update position,
             // il faudrait lui donner un objet "parameters" ça serait bcp + propre
             // il faudrait SURTOUT faire une fonction qui update les boids avec les parametres
