@@ -63,25 +63,26 @@ public:
         }
     }
 
-    //// update
-    void updatePosition(float aspect_ratio, std::vector<Boid>& boids, float min_speed, float max_speed, float turn_factor, float avoid_radius, float avoid_factor, float align_radius, float align_factor, float speed_multiplier, float screen_margin)
+    void updateParameters(float turn_factor, float avoid_radius, float avoid_factor, float align_radius, float align_factor)
     {
-        _turn_factor  = turn_factor;
-        _avoid_radius = avoid_radius;
-        _avoid_factor = avoid_factor;
-        _align_radius = align_radius;
-        _align_factor = align_factor;
-        //////////////////////////////////////////////////
+        _turn_factor  = turn_factor / 10000;
+        _avoid_radius = avoid_radius / 100;
+        _avoid_factor = avoid_factor / 1000;
+        _align_radius = align_radius / 100;
+        _align_factor = align_factor / 1000;
+    }
+
+    //// update
+    void updatePosition(float aspect_ratio, std::vector<Boid>& boids, float min_speed, float max_speed, float speed_multiplier, float screen_margin)
+    {
         // LIMITS OF THE SCREEN
         //////////////////////////////////////////////////
-
-        // 1) Plain teleportation
+        //////////////////////////// 1) Plain teleportation
         // if (abs(_pos.x) > _aspect_ratio)
         //     _pos.x = _pos.x * -1;
         // if (abs(_pos.y) > 1)
         //     _pos.y = _pos.y * -1;
-
-        // 2) Make them turn away !
+        //////////////////////////// 2) Make them turn away !
         float calculated_turn_factor  = _turn_factor * speed_multiplier;
         float calculated_avoid_factor = _avoid_factor * speed_multiplier;
         float calculated_align_factor = _align_factor * speed_multiplier;
@@ -106,7 +107,6 @@ public:
             _speed.y += calculated_turn_factor;
         }
 
-        //////////////////////////////////////////////////
         // AVOIDANCE & ALIGNMENT
         //////////////////////////////////////////////////
         glm::vec2 avoid_vec = {0, 0};
@@ -135,10 +135,11 @@ public:
             _speed += (align_vec - _speed) * calculated_align_factor;
         }
 
-        //////////////////////////////////////////////////
         // MIN AND MAX SPEED
         //////////////////////////////////////////////////
         // updating the speed to have a min and max speed
+        min_speed /= 10000; // need to adapt the value given by the parameter
+        max_speed /= 10000; // need to adapt the value given by the parameter
         float actual_speed = sqrt(_speed.x * _speed.x + _speed.y * _speed.y);
         if (actual_speed > max_speed)
         {
@@ -151,7 +152,6 @@ public:
             _speed.y = (_speed.y / actual_speed) * min_speed;
         }
 
-        //////////////////////////////////////////////////
         // POSITION UPDATE
         //////////////////////////////////////////////////
         // last thing : updating the position from the speed
@@ -166,7 +166,6 @@ int main()
     ctx.maximize_window();
 
     /////INITIALISATION
-
     std::vector<Boid> Boid_array;
     for (size_t i = 0; i < 80; ++i)
     {
@@ -219,13 +218,8 @@ int main()
         for (auto& i : Boid_array)
         {
             i.draw(ctx, show_avoid_circle, show_align_circle);
-            i.updatePosition(ctx.aspect_ratio(), Boid_array, min_speed / 10000, max_speed / 10000, turn_factor / 10000, avoid_radius / 100, avoid_factor / 1000, align_radius / 100, align_factor / 1000, speed_multiplier, screen_margin);
-            // il faut améliorer la fonction update position,
-            // il faudrait lui donner un objet "parameters" ça serait bcp + propre
-            // il faudrait SURTOUT faire une fonction qui update les boids avec les parametres
-            //      en gros séparer l'update des parametres des boids via la GUI
-            //      ET l'update de la position en fonction de ces paramètres
-            //      séparer en différente fonction tout ce qu'il se passe quoi
+            i.updateParameters(turn_factor, avoid_radius, avoid_factor, align_radius, align_factor);
+            i.updatePosition(ctx.aspect_ratio(), Boid_array, min_speed, max_speed, speed_multiplier, screen_margin);
         }
     };
 
