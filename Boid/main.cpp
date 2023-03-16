@@ -18,8 +18,8 @@ private:
     float     _draw_radius;
 
 public:
-    explicit Boid(float aspect_ratio)
-        : _pos(glm::vec2(p6::random::number(-aspect_ratio, aspect_ratio), p6::random::number(-1, 1))), // remplace seed avec la doc de p6
+    explicit Boid(glm::vec2 initial_position)
+        : _pos(initial_position), // remplace seed avec la doc de p6
         _speed(p6::random::number(-.001, .001), p6::random::number(-.001, .001))
         , _turn_factor(.0002)
         , _avoid_radius(.06)
@@ -170,12 +170,8 @@ int main()
     std::vector<Boid> Boid_array;
     for (size_t i = 0; i < 80; ++i)
     {
-        /*
-        Pour plus tard : c'est lunaire de leur donner l'aspect ratio et
-        qu'ensuite eux ils calculent leur position aléatoire.
-        Faudrait calculer une position random et leur donner.
-        */
-        Boid boidTemp(ctx.aspect_ratio());
+        glm::vec2 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1)};
+        Boid      boidTemp(random_pos);
         Boid_array.push_back(boidTemp);
     }
 
