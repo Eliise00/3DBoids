@@ -72,6 +72,7 @@ int main(int argc, char* argv[])
     const GLuint VERTEX_ATTR_COLOR = 1;
     glEnableVertexAttribArray(VERTEX_ATTR_COLOR);
 
+
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(VERTEX_ATTR_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2DColor), (void*)offsetof(Vertex2DColor, _position) );
 

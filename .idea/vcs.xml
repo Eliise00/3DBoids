@@ -19,22 +19,5 @@
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/boid-src/third-party/op" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/boid-src/third-party/op/tests/doctest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/boid-src/tooling" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/CMakeUtils" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/CMakeUtils/tooling" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/exe_path" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/exe_path/tooling" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/glfw" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/glpp-extended" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/glpp-extended/lib/glm" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/glpp-extended/lib/glpp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/glpp-extended/lib/glpp/tooling" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/glpp-extended/tooling" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/img" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/img/tooling" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/imgui" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/op" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/third-party/op/tests/doctest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/p6-src/tooling" vcs="Git" />
   </component>
 </project>
