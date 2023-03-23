@@ -3,7 +3,7 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-
+#include "glm/gtc/random.hpp"
 
 
 int main(int argc, char* argv[])
@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
     GLint uniformMVP = glGetUniformLocation(programID, "uMVPMatrix");
     GLint uniformMV = glGetUniformLocation(programID, "uMVMatrix");
     GLint uniformNormal = glGetUniformLocation(programID, "uNormalMatrix");
+    GLint uniformMoon = glGetUniformLocation(programID, "uMoonMatrix");
 
     glEnable(GL_DEPTH_TEST);
 
@@ -64,6 +65,15 @@ int main(int argc, char* argv[])
 
     glBindVertexArray(0);
 
+    std::vector<glm::vec3> angleRotation;
+    std::vector<glm::vec3> axeTranslation;
+
+    for (int i = 0; i < 32; i++) {
+        // Generate a random axis of rotation for the moon
+        angleRotation.push_back(glm::sphericalRand(2.f));
+        axeTranslation.push_back(glm::sphericalRand(2.f));
+    }
+
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -86,7 +96,31 @@ int main(int argc, char* argv[])
 
         glBindVertexArray(vao);
 
+
         glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+
+        // Get the current time
+        float time = ctx.time();
+
+        for(int i = 0; i < 32; i++){
+
+            glm::mat4 moonMVMatrix = glm::rotate(MVMatrix, time, angleRotation[i]);
+            moonMVMatrix = glm::rotate(moonMVMatrix, ctx.time(), angleRotation[i]); // Translation * Rotation
+            moonMVMatrix = glm::translate(moonMVMatrix, axeTranslation[i]); // Translation * Rotation * Translation
+            moonMVMatrix = glm::scale(moonMVMatrix, glm::vec3{0.2f}); // Translation * Rotation * Translation * Scale
+
+            glUniformMatrix4fv(uniformMV, 1, GL_FALSE, glm::value_ptr(moonMVMatrix));
+            glUniformMatrix4fv(uniformMVP, 1, GL_FALSE, glm::value_ptr(ProjMatrix * moonMVMatrix));
+            glUniformMatrix4fv(uniformNormal, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(moonMVMatrix))));
+
+            glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        }
+        /*
+        // Draw  second sphere
+        MVMatrix = glm::rotate(MVMatrix, time, glm::vec3{0.f, 1.f, 0.f}); // Rotate around the y-axis
+        MVMatrix = glm::translate(MVMatrix, {-2.f, 0.f, 0.f});
+        MVMatrix = glm::scale(MVMatrix, glm::vec3{0.2f});
+        */
 
         glBindVertexArray(0);
     };
