@@ -50,10 +50,11 @@ function(add_exercise EXERCISE_NAME)
     p6_copy_folder(${TARGET_NAME} assets/models)
 endfunction(add_exercise)
 
-add_exercise(TP3_exo1_triangle_blanc)
-add_exercise(TP3_exo2_triangle_couleurs)
+
+add_exercise(TP3_ShaderColor)
 add_exercise(Boid)
 add_exercise(TP6)
 add_exercise(TP6_MultiTexturing)
+add_exercise(TP6_MultiShaders)
 
 

@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
      * TEXTURE
      *************************/
 
-
+    
     ////Earth Texture
     GLuint earthTextureID = 0;
 
