@@ -208,6 +208,7 @@ int main(int argc, char* argv[])
         glBindTexture(GL_TEXTURE_2D, cloudTextureID);
 
         glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        glBindTexture(GL_TEXTURE_2D, 0);
 
 
         // Get the current time
@@ -232,6 +233,7 @@ int main(int argc, char* argv[])
             glBindTexture(GL_TEXTURE_2D, moonTextureID);
 
             glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+            glBindTexture(GL_TEXTURE_2D, 0);
 
         }
 

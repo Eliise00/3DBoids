@@ -39,6 +39,7 @@ public:
             p6::Center{_pos.x, _pos.y},
             p6::Radius{_draw_radius}
         );
+
         // avoid circle
         if (show_avoid_circle)
         {
