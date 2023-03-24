@@ -6,7 +6,7 @@
 #include "glm/gtc/random.hpp"
 
 
-int main(int argc, char* argv[])
+int main()
 {
     auto ctx = p6::Context{{1280, 720, "TP3 EX1"}};
     ctx.maximize_window();
@@ -16,8 +16,8 @@ int main(int argc, char* argv[])
      *********************************/
 
     p6::Shader program = p6::load_shader(
-        "shaders" / std::filesystem::path{argv[1]},
-        "shaders" / std::filesystem::path{argv[2]}
+        "shaders/3D.vs.glsl",
+        "shaders/multiTex3D.fs.glsl"
     );
     program.use();
 
