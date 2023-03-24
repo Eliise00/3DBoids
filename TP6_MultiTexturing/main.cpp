@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
 
-
     p6::Shader program = p6::load_shader(
         "shaders" / std::filesystem::path{argv[1]},
         "shaders" / std::filesystem::path{argv[2]}

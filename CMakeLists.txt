@@ -28,6 +28,8 @@ function(add_exercise EXERCISE_NAME)
         target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors)
     endif()
 
+
+
     # ---Declare source files---
     file(GLOB_RECURSE EXERCISE_FILES CONFIGURE_DEPENDS ${EXERCISE_NAME}/*)
     file(GLOB_RECURSE COMMON_FILES CONFIGURE_DEPENDS src-common/*)
@@ -42,11 +44,16 @@ function(add_exercise EXERCISE_NAME)
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${EXERCISE_NAME})
 
     # ---Copy the assets and the shaders to the output folder (where the executable is created)---
-    Cool__target_copy_folder(${TARGET_NAME} assets)
+    Cool__target_copy_folder(${TARGET_NAME} assets/models)
     Cool__target_copy_folder(${TARGET_NAME} ${EXERCISE_NAME}/shaders shaders)
+
+    p6_copy_folder(${TARGET_NAME} assets/models)
 endfunction(add_exercise)
 
 add_exercise(TP3_exo1_triangle_blanc)
 add_exercise(TP3_exo2_triangle_couleurs)
 add_exercise(Boid)
 add_exercise(TP6)
+add_exercise(TP6_MultiTexturing)
+
+
