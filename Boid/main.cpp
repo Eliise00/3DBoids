@@ -41,7 +41,7 @@ public:
         );
 
         // avoid circle
-        if (show_avoid_circle)
+        if (show_avoid_circle) // TODO make three separate draw functions
         {
             ctx.stroke_weight = 0.002f;
             ctx.use_stroke    = true;
@@ -64,6 +64,8 @@ public:
         }
     }
 
+    // TODO struct parameters
+    // + externalize
     void updateParameters(float turn_factor, float avoid_radius, float avoid_factor, float align_radius, float align_factor)
     {
         _turn_factor  = turn_factor / 10000;
@@ -74,6 +76,7 @@ public:
     }
 
     //// update
+    /// TODO separate in different functions that affect the speed
     void updatePosition(float aspect_ratio, std::vector<Boid>& boids, float min_speed, float max_speed, float speed_multiplier, float screen_margin)
     {
         // LIMITS OF THE SCREEN
@@ -84,9 +87,9 @@ public:
         // if (abs(_pos.y) > 1)
         //     _pos.y = _pos.y * -1;
         //////////////////////////// 2) Make them turn away !
-        float calculated_turn_factor  = _turn_factor * speed_multiplier;
-        float calculated_avoid_factor = _avoid_factor * speed_multiplier;
-        float calculated_align_factor = _align_factor * speed_multiplier;
+        const float calculated_turn_factor  = _turn_factor * speed_multiplier;
+        const float calculated_avoid_factor = _avoid_factor * speed_multiplier;
+        const float calculated_align_factor = _align_factor * speed_multiplier;
         //  Right
         if (_pos.x > aspect_ratio - screen_margin * aspect_ratio)
         {
@@ -171,8 +174,7 @@ int main()
     for (size_t i = 0; i < 80; ++i)
     {
         glm::vec2 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1)};
-        Boid      boidTemp(random_pos);
-        Boid_array.push_back(boidTemp);
+        Boid_array.emplace_back(random_pos);
     }
 
     // Boid parameters
@@ -194,6 +196,7 @@ int main()
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::Blue);
 
+        // TODO : specific function for GUI
         ///////RENDER
         ImGui::Begin("Control Panel");
 
@@ -216,11 +219,11 @@ int main()
         ImGui::End();
 
         // Draw array
-        for (auto& i : Boid_array)
+        for (auto& boid : Boid_array)
         {
-            i.draw(ctx, show_avoid_circle, show_align_circle);
-            i.updateParameters(turn_factor, avoid_radius, avoid_factor, align_radius, align_factor);
-            i.updatePosition(ctx.aspect_ratio(), Boid_array, min_speed, max_speed, speed_multiplier, screen_margin);
+            boid.draw(ctx, show_avoid_circle, show_align_circle);
+            boid.updateParameters(turn_factor, avoid_radius, avoid_factor, align_radius, align_factor);
+            boid.updatePosition(ctx.aspect_ratio(), Boid_array, min_speed, max_speed, speed_multiplier, screen_margin);
         }
     };
 
