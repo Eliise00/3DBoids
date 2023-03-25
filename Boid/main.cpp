@@ -19,7 +19,7 @@ private:
 
 public:
     explicit Boid(glm::vec2 initial_position)
-        : _pos(initial_position), // remplace seed avec la doc de p6
+        : _pos(initial_position), //
         _speed(p6::random::number(-.001, .001), p6::random::number(-.001, .001))
         , _turn_factor(.0002)
         , _avoid_radius(.06)
@@ -30,38 +30,36 @@ public:
     {
     }
 
-    void draw(p6::Context& ctx, bool show_avoid_circle, bool show_align_circle) const
+    void draw(p6::Context& ctx) const
     {
-        // boid circle
         ctx.use_stroke = false;
         ctx.use_fill   = true;
         ctx.circle(
             p6::Center{_pos.x, _pos.y},
             p6::Radius{_draw_radius}
         );
+    }
 
-        // avoid circle
-        if (show_avoid_circle) // TODO make three separate draw functions
-        {
-            ctx.stroke_weight = 0.002f;
-            ctx.use_stroke    = true;
-            ctx.use_fill      = false;
-            ctx.circle(
-                p6::Center{_pos.x, _pos.y},
-                p6::Radius{_avoid_radius}
-            );
-        }
-        // cohesion circle
-        if (show_align_circle)
-        {
-            ctx.stroke_weight = 0.0025f;
-            ctx.use_stroke    = true;
-            ctx.use_fill      = false;
-            ctx.circle(
-                p6::Center{_pos.x, _pos.y},
-                p6::Radius{_align_radius}
-            );
-        }
+    void drawAvoidCircle(p6::Context& ctx) const
+    {
+        ctx.stroke_weight = 0.002f;
+        ctx.use_stroke    = true;
+        ctx.use_fill      = false;
+        ctx.circle(
+            p6::Center{_pos.x, _pos.y},
+            p6::Radius{_avoid_radius}
+        );
+    }
+
+    void drawAlignCircle(p6::Context& ctx) const
+    {
+        ctx.stroke_weight = 0.001f;
+        ctx.use_stroke    = true;
+        ctx.use_fill      = false;
+        ctx.circle(
+            p6::Center{_pos.x, _pos.y},
+            p6::Radius{_align_radius}
+        );
     }
 
     // TODO struct parameters
@@ -221,7 +219,11 @@ int main()
         // Draw array
         for (auto& boid : Boid_array)
         {
-            boid.draw(ctx, show_avoid_circle, show_align_circle);
+            boid.draw(ctx);
+            if (show_align_circle)
+                boid.drawAlignCircle(ctx);
+            if (show_avoid_circle)
+                boid.drawAvoidCircle(ctx);
             boid.updateParameters(turn_factor, avoid_radius, avoid_factor, align_radius, align_factor);
             boid.updatePosition(ctx.aspect_ratio(), Boid_array, min_speed, max_speed, speed_multiplier, screen_margin);
         }
