@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 
 
     // Unbind the texture
-    glActiveTexture(GL_TEXTURE0);
+    // glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
 
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 
 
     // Unbind the texture
-    glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
 
@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
     glGenTextures(1, &cloudTextureID);
 
 
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D,cloudTextureID);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureCloud.width(), textureCloud.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureCloud.data());
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
 
 
     // Unbind the texture
-    glActiveTexture(GL_TEXTURE1);
+    // glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
         moonProgram.m_Program.use();
 
         glUniform1i(earthProgram.uEarthTexture, 0);
-        glUniform1i(earthProgram.uCloudTexture, 1);
+        glUniform1i(earthProgram.uCloudTexture, 2);
 
         const glm::mat4 projMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, earthTextureID);
-        glActiveTexture(GL_TEXTURE1);
+        glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, cloudTextureID);
 
         glDrawArrays(GL_TRIANGLES, 0, vertices.size());
@@ -216,7 +216,7 @@ int main(int argc, char* argv[])
 
         for(int i = 0; i < 32; i++){
 
-            glUniform1i(moonProgram.uniformTexture, 0);
+            glUniform1i(moonProgram.uniformTexture, 1);
 
 
             glm::mat4 moonMVMatrix = glm::rotate(globalMVMatrix, time, angleRotation[i]);
@@ -229,7 +229,7 @@ int main(int argc, char* argv[])
             glUniformMatrix4fv(moonProgram.uniformNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(moonMVMatrix))));
             glUniformMatrix4fv(moonProgram.uniformMVPMatrix, 1, GL_FALSE, glm::value_ptr(projMatrix * moonMVMatrix));
 
-            glActiveTexture(GL_TEXTURE0);
+            glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, moonTextureID);
 
             glDrawArrays(GL_TRIANGLES, 0, vertices.size());
