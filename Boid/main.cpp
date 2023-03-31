@@ -17,7 +17,7 @@ public:
     {
     }
 
-    void draw(p6::Context& ctx, float draw_radius) const
+    void drawBody(p6::Context& ctx, float draw_radius) const
     {
         ctx.use_stroke = false;
         ctx.use_fill   = true;
@@ -27,25 +27,14 @@ public:
         );
     }
 
-    void drawAvoidCircle(p6::Context& ctx, float avoid_radius) const
+    void drawHelper(p6::Context& ctx, float radius, float stroke_weight) const
     {
-        ctx.stroke_weight = 0.002f;
+        ctx.stroke_weight = stroke_weight;
         ctx.use_stroke    = true;
         ctx.use_fill      = false;
         ctx.circle(
             p6::Center{_pos.x, _pos.y},
-            p6::Radius{avoid_radius}
-        );
-    }
-
-    void drawAlignCircle(p6::Context& ctx, float align_radius) const
-    {
-        ctx.stroke_weight = 0.001f;
-        ctx.use_stroke    = true;
-        ctx.use_fill      = false;
-        ctx.circle(
-            p6::Center{_pos.x, _pos.y},
-            p6::Radius{align_radius}
+            p6::Radius{radius}
         );
     }
 
@@ -140,8 +129,8 @@ int main()
     float align_radius = 20.; // to divide by 100
     float align_factor = 6.;  // to divide by 1000
     // Environment
-    float speed_multiplier = 1.; // to accelerate the simulation
-    float screen_margin    = .1; // to reduce the limits boids can't cross (default is full window)
+    float speed_multiplier = 1.; // used to accelerate the simulation
+    float screen_margin    = .1; // used to reduce the limits boids can't cross (default is full window)
     // Helpers
     bool show_avoid_circle = true;
     bool show_align_circle = true;
@@ -179,11 +168,6 @@ int main()
         // For every boid
         for (auto& boid : Boid_array)
         {
-            // Display helpers
-            if (show_align_circle)
-                boid.drawAlignCircle(ctx, calc_align_radius);
-            if (show_avoid_circle)
-                boid.drawAvoidCircle(ctx, calc_avoid_radius);
             // Update speed
             boid.adaptSpeedToBorders(ctx.aspect_ratio(), screen_margin, calc_turn_factor);
             boid.adaptSpeedToBoids(Boid_array, calc_avoid_factor, calc_avoid_radius, calc_align_factor, calc_align_radius);
@@ -191,7 +175,12 @@ int main()
             // Update position
             boid.updatePosition(speed_multiplier);
             // Display
-            boid.draw(ctx, draw_radius);
+            boid.drawBody(ctx, draw_radius);
+            // Display helpers
+            if (show_align_circle)
+                boid.drawHelper(ctx, calc_align_radius, .001f);
+            if (show_avoid_circle)
+                boid.drawHelper(ctx, calc_avoid_radius, .0015f);
         }
     };
 
