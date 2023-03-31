@@ -5,6 +5,15 @@
 #include "p6/p6.h"
 #define DOCTEST_CONFIG_IMPLEMENT
 
+struct Boid_behavior_params {
+    float align_factor;
+    float align_radius;
+    float avoid_factor;
+    float avoid_radius;
+    float max_speed;
+    float min_speed;
+};
+
 class Boid {
 private:
     glm::vec2 _pos;
@@ -38,8 +47,9 @@ public:
         );
     }
 
-    void adaptSpeedToBorders(float aspect_ratio, float screen_margin, float turn_factor)
+    void adaptSpeedToBorders(float aspect_ratio, float screen_margin, Boid_behavior_params params)
     {
+        float turn_factor = params.avoid_factor / 10;
         if (_pos.x > aspect_ratio - screen_margin * aspect_ratio) // Right
             _speed.x -= turn_factor;
 
@@ -53,8 +63,7 @@ public:
             _speed.y += turn_factor;
     }
 
-    // TODO : struct for the parameters
-    void adaptSpeedToBoids(std::vector<Boid>& boids, float avoid_factor, float avoid_radius, float align_factor, float align_radius)
+    void adaptSpeedToBoids(std::vector<Boid>& boids, Boid_behavior_params params)
     {
         glm::vec2 avoid_vec = {0, 0};
         glm::vec2 align_vec = {0, 0};
@@ -64,37 +73,37 @@ public:
             if (_pos != other._pos) // if not itself
             {
                 float distance_to_other = glm::distance(_pos, other._pos);
-                if (distance_to_other < avoid_radius) // if in avoid radius -> avoid
+                if (distance_to_other < params.avoid_radius) // if in avoid radius -> avoid
                 {
                     avoid_vec += _pos - other._pos;
                 }
-                else if (distance_to_other < align_radius) // else if in align radius
+                else if (distance_to_other < params.align_radius) // else if in align radius
                 {
                     align_vec += other._speed;
                     friends += 1;
                 }
             }
         }
-        _speed += avoid_vec * avoid_factor;
+        _speed += avoid_vec * params.avoid_factor;
         if (friends > 0)
         {
             align_vec /= friends;
-            _speed += (align_vec - _speed) * align_factor;
+            _speed += (align_vec - _speed) * params.align_factor;
         }
     }
 
-    void clampSpeed(float min_speed, float max_speed)
+    void clampSpeed(Boid_behavior_params params)
     {
         float actual_speed = sqrt(_speed.x * _speed.x + _speed.y * _speed.y);
-        if (actual_speed > max_speed)
+        if (actual_speed > params.max_speed)
         {
-            _speed.x = (_speed.x / actual_speed) * max_speed;
-            _speed.y = (_speed.y / actual_speed) * max_speed;
+            _speed.x = (_speed.x / actual_speed) * params.max_speed;
+            _speed.y = (_speed.y / actual_speed) * params.max_speed;
         }
-        else if (actual_speed < min_speed)
+        else if (actual_speed < params.min_speed)
         {
-            _speed.x = (_speed.x / actual_speed) * min_speed;
-            _speed.y = (_speed.y / actual_speed) * min_speed;
+            _speed.x = (_speed.x / actual_speed) * params.min_speed;
+            _speed.y = (_speed.y / actual_speed) * params.min_speed;
         }
     }
 
@@ -105,82 +114,77 @@ public:
     }
 };
 
-// TODO : specific functions for parameters, GUI and boid updating in the main
+// TODO : full params struct, specific functon for GUI
 int main()
 {
+    // Window
     auto ctx = p6::Context{{1280, 720, "Boid"}};
     ctx.maximize_window();
 
-    /////INITIALISATION
+    // Boids
     std::vector<Boid> Boid_array;
     for (size_t i = 0; i < 80; ++i)
     {
         glm::vec2 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1)};
         Boid_array.emplace_back(random_pos);
     }
-
     // Boid parameters
     float draw_radius  = .01;
     float min_speed    = 20.; // to divide by 10000 /!\ not tunable in gui anymore
     float max_speed    = 30.; // to divide by 10000 /!\ not tunable in gui anymore
-    float turn_factor  = 2.;  // to divide by 10000
     float avoid_radius = 6.;  // to divide by 100
     float avoid_factor = 2.;  // to divide by 1000
     float align_radius = 20.; // to divide by 100
     float align_factor = 6.;  // to divide by 1000
-    // Environment
+    // Environment parameters
     float speed_multiplier = 1.; // used to accelerate the simulation
     float screen_margin    = .1; // used to reduce the limits boids can't cross (default is full window)
-    // Helpers
+    // Helper booleans
     bool show_avoid_circle = true;
     bool show_align_circle = true;
 
-    // Declare your infinite update loop.
+    // Infinite loop
     ctx.update = [&]() {
-        ctx.background(p6::NamedColor::Blue);
+        ctx.background(p6::NamedColor::DarkCyan);
 
-        ///////RENDER
         ImGui::Begin("Control Panel");
-
         ImGui::Text("Boid parameters");
-        ImGui::SliderFloat("Turn factor", &turn_factor, 1, 6);
         ImGui::SliderFloat("Avoid radius", &avoid_radius, 0, 32);
         ImGui::SliderFloat("Avoid factor", &avoid_factor, 0, 12);
         ImGui::SliderFloat("Align radius", &align_radius, 0, 32);
         ImGui::SliderFloat("Align factor", &align_factor, 0, 12);
         ImGui::Text("Environment");
-        ImGui::SliderFloat("Speed multiplier", &speed_multiplier, 1, 10);
+        ImGui::SliderFloat("Speed multiplier", &speed_multiplier, 1, 50);
         ImGui::SliderFloat("Screen margin", &screen_margin, .1, 1);
         ImGui::Text("Helpers");
         ImGui::Checkbox("Show avoid circles", &show_avoid_circle);
         ImGui::Checkbox("Show align circles", &show_align_circle);
         ImGui::End();
 
-        // Calculate the correct values to use
-        const float calc_turn_factor  = (turn_factor * speed_multiplier) / 10000;
-        const float calc_avoid_radius = avoid_radius / 100;
-        const float calc_avoid_factor = (avoid_factor * speed_multiplier) / 1000;
-        const float calc_align_radius = align_radius / 100;
-        const float calc_align_factor = (align_factor * speed_multiplier) / 1000;
-        const float calc_min_speed    = min_speed / 10000;
-        const float calc_max_speed    = max_speed / 10000;
+        Boid_behavior_params boid_behavior_params{
+            .align_factor = (align_factor * speed_multiplier) / 1000,
+            .align_radius = align_radius / 100,
+            .avoid_factor = (avoid_factor * speed_multiplier) / 1000,
+            .avoid_radius = avoid_radius / 100,
+            .max_speed    = max_speed / 10000,
+            .min_speed    = min_speed / 10000};
 
         // For every boid
         for (auto& boid : Boid_array)
         {
             // Update speed
-            boid.adaptSpeedToBorders(ctx.aspect_ratio(), screen_margin, calc_turn_factor);
-            boid.adaptSpeedToBoids(Boid_array, calc_avoid_factor, calc_avoid_radius, calc_align_factor, calc_align_radius);
-            boid.clampSpeed(calc_min_speed, calc_max_speed);
+            boid.adaptSpeedToBorders(ctx.aspect_ratio(), screen_margin, boid_behavior_params);
+            boid.adaptSpeedToBoids(Boid_array, boid_behavior_params);
+            boid.clampSpeed(boid_behavior_params);
             // Update position
             boid.updatePosition(speed_multiplier);
             // Display
             boid.drawBody(ctx, draw_radius);
             // Display helpers
             if (show_align_circle)
-                boid.drawHelper(ctx, calc_align_radius, .001f);
+                boid.drawHelper(ctx, boid_behavior_params.align_radius, .001f);
             if (show_avoid_circle)
-                boid.drawHelper(ctx, calc_avoid_radius, .0015f);
+                boid.drawHelper(ctx, boid_behavior_params.avoid_radius, .0015f);
         }
     };
 
