@@ -169,6 +169,11 @@ int main()
             .max_speed    = max_speed / 10000,
             .min_speed    = min_speed / 10000};
 
+        // Instead of doing that, maybe the calculating of the variables could be done in the functions
+        // it would be cleaner here with a big struct for all parameters and the gui modifies the variables in there
+        // and every function takes that and uses what they want
+        // idk
+
         // For every boid
         for (auto& boid : Boid_array)
         {
