@@ -26,47 +26,6 @@ int main()
 
     GLuint programID = program.id();
 
-    /************************
-     * CAMERA
-     ***********************/
-
-    // Création de la caméra
-    TrackballCamera camera;
-    camera.m_Distance = 5.0f;
-
-    // Variables pour la gestion de la souris
-    float mouseSensitivity = 0.1f;
-    float scrollSensitivity = 1.0f;
-    bool leftButtonPressed = false;
-    glm::vec2 lastMovePos;
-
-    // Fonction pour gérer les événements de la souris
-    ctx.mouse_pressed = [&](p6::MouseButton button) {
-        if (button.button == p6::Button::Left) {
-            leftButtonPressed = true;
-            lastMovePos = button.position;
-        }
-    };
-
-    ctx.mouse_released = [&](p6::MouseButton button) {
-        if (button.button == p6::Button::Left) {
-            leftButtonPressed = false;
-        }
-    };
-
-    ctx.mouse_moved = [&](p6::MouseMove move) {
-        if (leftButtonPressed) {
-            move.delta = move.position - lastMovePos;
-            camera.rotateLeft(move.delta.x * mouseSensitivity);
-            camera.rotateUp(move.delta.y * mouseSensitivity);
-            lastMovePos = move.position;
-        }
-    };
-
-
-    ctx.mouse_scrolled = [&](p6::MouseScroll scroll) {
-        camera.moveFront(scroll.dx * scrollSensitivity);
-    };
 
     /*************************
      * TEXTURE
@@ -196,11 +155,83 @@ int main()
         axeTranslation.push_back(glm::sphericalRand(2.f));
     }
 
+    /************************
+     * CAMERA
+     ***********************/
+
+    // Création de la caméra
+    TrackballCamera camera;
+    camera.m_Distance = 5.0f;
+
+    // Variables pour la gestion de la souris
+    float scrollSensitivity = 1.0f;
+    glm::vec2 lastMovePos;
+    bool right = false;
+    bool left = false;
+    bool up = false;
+    bool down = false;
+
+
 
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
 
+        if(right){
+            camera.rotateLeft(-0.25f);
+        }
+        if(left){
+            camera.rotateLeft(0.25f);
+        }
+        if(up){
+            camera.rotateUp(0.1f);
+        }
+        if(down){
+            camera.rotateUp(-0.1f);
+        }
+
+        ctx.key_pressed = [&right, &up, &left, &down](p6::Key key){
+            if(key.physical == GLFW_KEY_RIGHT){
+                right = true;
+            }
+            if(key.physical == GLFW_KEY_LEFT){
+                left = true;
+            }
+            if(key.physical == GLFW_KEY_UP){
+                up = true;
+            }
+            if(key.physical == GLFW_KEY_DOWN){
+                down = true;
+            }
+        };
+
+        ctx.key_released = [&right, &up, &left, &down](p6::Key key){
+            if(key.physical == GLFW_KEY_RIGHT){
+                right = false;
+            }
+            if(key.physical == GLFW_KEY_LEFT){
+                left = false;
+            }
+            if(key.physical == GLFW_KEY_UP){
+                up = false;
+            }
+            if(key.physical == GLFW_KEY_DOWN){
+                down = false;
+            }
+        };
+
+        // Fonction pour gérer les événements de la souris
+        ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
+            camera.rotateLeft(button.delta.x * 5);
+            camera.rotateUp(-button.delta.y * 5);
+        };
+
+
+        ctx.mouse_scrolled = [&](p6::MouseScroll scroll) {
+            camera.moveFront(scroll.dy * scrollSensitivity);
+        };
+
+        glm::mat4 viewMatrix = camera.getViewMatrix();
 
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
@@ -212,7 +243,6 @@ int main()
 
         glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
-        glm::mat4 viewMatrix = camera.getViewMatrix();
 
         glm::mat4 MVMatrix = glm::translate(glm::mat4(1), glm::vec3(0., 0., -5.)) * viewMatrix;
 
@@ -245,6 +275,7 @@ int main()
             moonMVMatrix = glm::rotate(moonMVMatrix, ctx.time(), angleRotation[i]); // Translation * Rotation
             moonMVMatrix = glm::translate(moonMVMatrix, axeTranslation[i]); // Translation * Rotation * Translation
             moonMVMatrix = glm::scale(moonMVMatrix, glm::vec3{0.2f}); // Translation * Rotation * Translation * Scale
+            //moonMVMatrix = viewMatrix*moonMVMatrix;
 
             glUniformMatrix4fv(uniformMV, 1, GL_FALSE, glm::value_ptr(moonMVMatrix));
             glUniformMatrix4fv(uniformMVP, 1, GL_FALSE, glm::value_ptr(ProjMatrix * moonMVMatrix));
