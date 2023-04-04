@@ -19,7 +19,7 @@ function(add_exercise EXERCISE_NAME)
     add_executable(${TARGET_NAME})
 
     # ---Choose C++ version---
-    target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
+    target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 
     # ---Choose warning level---
     if(MSVC)
