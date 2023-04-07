@@ -148,6 +148,21 @@ int main()
     bool show_avoid_circle = true;
     bool show_align_circle = true;
 
+    std::vector<Boid> Boid_array2;
+    for (size_t i = 0; i < 5; ++i)
+    {
+        glm::vec2 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1)};
+        Boid_array2.emplace_back(random_pos);
+    }
+    Boid_behavior_params boid_behavior_params2{
+        .align_factor = 12.,
+        .align_radius = 40.,
+        .avoid_factor = 4.,
+        .avoid_radius = 12.,
+        .draw_radius  = .08,
+        .max_speed    = 8,
+        .min_speed    = 6};
+
     // Infinite loop
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::DarkCyan);
@@ -173,6 +188,7 @@ int main()
             // Update speed
             boid.adaptSpeedToBorders(ctx.aspect_ratio(), screen_margin, boid_behavior_params, speed_multiplier);
             boid.adaptSpeedToBoids(Boid_array, boid_behavior_params, speed_multiplier);
+            boid.adaptSpeedToBoids(Boid_array2, boid_behavior_params2, speed_multiplier);
             boid.clampSpeed(boid_behavior_params);
             // Update position
             boid.updatePosition(speed_multiplier);
@@ -183,6 +199,25 @@ int main()
                 boid.drawHelper(ctx, boid_behavior_params.align_radius / 100, .001f);
             if (show_avoid_circle)
                 boid.drawHelper(ctx, boid_behavior_params.avoid_radius / 100, .0015f);
+        }
+
+        // For every boid
+        for (auto& boid : Boid_array2)
+        {
+            // Update speed
+            boid.adaptSpeedToBorders(ctx.aspect_ratio(), screen_margin, boid_behavior_params2, speed_multiplier);
+            boid.adaptSpeedToBoids(Boid_array2, boid_behavior_params2, speed_multiplier);
+            boid.adaptSpeedToBoids(Boid_array, boid_behavior_params, speed_multiplier);
+            boid.clampSpeed(boid_behavior_params2);
+            // Update position
+            boid.updatePosition(speed_multiplier);
+            // Display
+            boid.drawBody(ctx, boid_behavior_params2.draw_radius);
+            // Display helpers
+            if (show_align_circle)
+                boid.drawHelper(ctx, boid_behavior_params2.align_radius / 100, .001f);
+            if (show_avoid_circle)
+                boid.drawHelper(ctx, boid_behavior_params2.avoid_radius / 100, .0015f);
         }
     };
 
