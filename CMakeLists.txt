@@ -58,5 +58,7 @@ add_exercise(TP6_MultiTexturing)
 add_exercise(TP6_MultiShaders)
 add_exercise(TP7)
 add_exercise(TP7_FreeflyCam)
+add_exercise(TP8_DirectionalLight)
+add_exercise(TP8_PointLight)
 
 
