@@ -130,10 +130,10 @@ void createGuiFromParams(Boid_behavior_params* params, const char* window_name)
 {
     ImGui::Begin(window_name);
     ImGui::Text("Boid parameters");
-    ImGui::SliderFloat("Avoid radius", &params->avoid_radius, 0, 32);
-    ImGui::SliderFloat("Avoid factor", &params->avoid_factor, 0, 12);
-    ImGui::SliderFloat("Align radius", &params->align_radius, 0, 32);
-    ImGui::SliderFloat("Align factor", &params->align_factor, 0, 12);
+    ImGui::SliderFloat("Avoid radius", &params->avoid_radius, 0, 64);
+    ImGui::SliderFloat("Avoid factor", &params->avoid_factor, 0, 24);
+    ImGui::SliderFloat("Align radius", &params->align_radius, 0, 64);
+    ImGui::SliderFloat("Align factor", &params->align_factor, 0, 24);
     ImGui::End();
 };
 
@@ -183,6 +183,15 @@ int main()
         .max_speed    = 8,
         .min_speed    = 6};
 
+    Boid_behavior_params maxi_boid_params{
+        .align_factor = 12.,
+        .align_radius = 40.,
+        .avoid_factor = 4.,
+        .avoid_radius = 12.,
+        .draw_radius  = .2,
+        .max_speed    = 4,
+        .min_speed    = 3};
+
     Environment_params environment_params{
         .speed_multiplier  = 1.,
         .aspect_ratio      = ctx.aspect_ratio(),
@@ -214,6 +223,19 @@ int main()
                     boid.drawHelper(ctx, small_boid_params.align_radius / 100, .001f);
                 if (environment_params.show_avoid_circle)
                     boid.drawHelper(ctx, small_boid_params.avoid_radius / 100, .0015f);
+            }
+            else if (boid_index == 74)
+            {
+                boid.adaptSpeedToBorders(environment_params, maxi_boid_params);
+                boid.adaptSpeedToBoids(Boid_array, environment_params, maxi_boid_params);
+                boid.clampSpeed(maxi_boid_params);
+                boid.updatePosition(environment_params);
+                boid.drawBody(ctx, maxi_boid_params.draw_radius);
+                // Display helpers
+                if (environment_params.show_align_circle)
+                    boid.drawHelper(ctx, maxi_boid_params.align_radius / 100, .001f);
+                if (environment_params.show_avoid_circle)
+                    boid.drawHelper(ctx, maxi_boid_params.avoid_radius / 100, .0015f);
             }
             else
             {
