@@ -174,14 +174,14 @@ int main()
         .max_speed    = 30,
         .min_speed    = 20};
 
-    // Boid_behavior_params big_boid_params{
-    //     .align_factor = 12.,
-    //     .align_radius = 40.,
-    //     .avoid_factor = 4.,
-    //     .avoid_radius = 12.,
-    //     .draw_radius  = .08,
-    //     .max_speed    = 8,
-    //     .min_speed    = 6};
+    Boid_behavior_params big_boid_params{
+        .align_factor = 12.,
+        .align_radius = 40.,
+        .avoid_factor = 4.,
+        .avoid_radius = 12.,
+        .draw_radius  = .08,
+        .max_speed    = 8,
+        .min_speed    = 6};
 
     Environment_params environment_params{
         .speed_multiplier  = 1.,
@@ -195,26 +195,39 @@ int main()
         ctx.background(p6::NamedColor::DarkCyan);
 
         createGuiFromParams(&small_boid_params, "Small Boids");
-        // createGuiFromParams(&big_boid_params, "Big Boids");
+        createGuiFromParams(&big_boid_params, "Big Boids");
         createMainGui(&environment_params);
 
         // For every boid
         size_t boid_index = 0;
         for (auto& boid : Boid_array)
         {
-            // Update speed
-            boid.adaptSpeedToBorders(environment_params, small_boid_params);
-            boid.adaptSpeedToBoids(Boid_array, environment_params, small_boid_params);
-            boid.clampSpeed(small_boid_params);
-            // Update position
-            boid.updatePosition(environment_params);
-            // Display
-            boid.drawBody(ctx, small_boid_params.draw_radius);
-            // Display helpers
-            if (environment_params.show_align_circle)
-                boid.drawHelper(ctx, small_boid_params.align_radius / 100, .001f);
-            if (environment_params.show_avoid_circle)
-                boid.drawHelper(ctx, small_boid_params.avoid_radius / 100, .0015f);
+            if (boid_index < 70)
+            {
+                boid.adaptSpeedToBorders(environment_params, small_boid_params);
+                boid.adaptSpeedToBoids(Boid_array, environment_params, small_boid_params);
+                boid.clampSpeed(small_boid_params);
+                boid.updatePosition(environment_params);
+                boid.drawBody(ctx, small_boid_params.draw_radius);
+                // Display helpers
+                if (environment_params.show_align_circle)
+                    boid.drawHelper(ctx, small_boid_params.align_radius / 100, .001f);
+                if (environment_params.show_avoid_circle)
+                    boid.drawHelper(ctx, small_boid_params.avoid_radius / 100, .0015f);
+            }
+            else
+            {
+                boid.adaptSpeedToBorders(environment_params, big_boid_params);
+                boid.adaptSpeedToBoids(Boid_array, environment_params, big_boid_params);
+                boid.clampSpeed(big_boid_params);
+                boid.updatePosition(environment_params);
+                boid.drawBody(ctx, big_boid_params.draw_radius);
+                // Display helpers
+                if (environment_params.show_align_circle)
+                    boid.drawHelper(ctx, big_boid_params.align_radius / 100, .001f);
+                if (environment_params.show_avoid_circle)
+                    boid.drawHelper(ctx, big_boid_params.avoid_radius / 100, .0015f);
+            }
             boid_index++;
         }
     };
