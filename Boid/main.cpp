@@ -28,11 +28,13 @@ class Boid {
 private:
     glm::vec2 _pos;
     glm::vec2 _speed;
+    float     _radius;
 
 public:
-    explicit Boid(glm::vec2 initial_position)
+    explicit Boid(glm::vec2 initial_position, float radius)
         : _pos(initial_position), //
         _speed(p6::random::number(-.001, .001), p6::random::number(-.001, .001))
+        , _radius(radius)
     {
     }
 
@@ -82,7 +84,7 @@ public:
         {
             if (_pos != other._pos) // if not itself
             {
-                float distance_to_other = glm::distance(_pos, other._pos);
+                float distance_to_other = glm::distance(_pos, other._pos) - other._radius;
                 if (distance_to_other < (params.avoid_radius / 100)) // if in avoid radius -> avoid
                 {
                     avoid_vec += _pos - other._pos;
@@ -162,7 +164,12 @@ int main()
     for (size_t i = 0; i < nb_of_boids; ++i)
     {
         glm::vec2 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1)};
-        Boid_array.emplace_back(random_pos);
+        if (i < 70)
+            Boid_array.emplace_back(random_pos, .01);
+        else if (i == 74)
+            Boid_array.emplace_back(random_pos, .2);
+        else
+            Boid_array.emplace_back(random_pos, .08);
     }
 
     Boid_behavior_params small_boid_params{
@@ -187,7 +194,7 @@ int main()
         .align_factor = 12.,
         .align_radius = 40.,
         .avoid_factor = 4.,
-        .avoid_radius = 12.,
+        .avoid_radius = 2.,
         .draw_radius  = .2,
         .max_speed    = 4,
         .min_speed    = 3};
