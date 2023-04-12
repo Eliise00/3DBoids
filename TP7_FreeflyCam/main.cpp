@@ -56,11 +56,11 @@ int main()
 
     // BEGINNING OF MY INIT CODE//
 
-    //img::Image earthTex = p6::load_image_buffer("assets/textures/EarthMap.jpg");
+    // img::Image earthTex = p6::load_image_buffer("assets/textures/EarthMap.jpg");
     const auto earthTex = p6::load_image_buffer("assets/models/EarthMap.jpg");
-    //img::Image cloudTex = p6::load_image_buffer("assets/textures/CloudMap.jpg");
+    // img::Image cloudTex = p6::load_image_buffer("assets/textures/CloudMap.jpg");
     const auto cloudTex = p6::load_image_buffer("assets/models/CloudMap.jpg");
-    //img::Image moonTex  = p6::load_image_buffer("assets/textures/MoonMap.jpg");
+    // img::Image moonTex  = p6::load_image_buffer("assets/textures/MoonMap.jpg");
     const auto moonTex = p6::load_image_buffer("assets/models/MoonMap.jpg");
 
     // create the programs
@@ -162,7 +162,7 @@ int main()
 
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
-    //ViewMatrix.moveFront(-5);
+    // ViewMatrix.moveFront(-5);
 
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
     glm::mat4 MVMatrix;
