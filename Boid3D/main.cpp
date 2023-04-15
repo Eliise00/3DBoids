@@ -11,7 +11,7 @@
 int const window_width  = 1920;
 int const window_height = 1080;
 
-struct BoidProgram {
+struct PenguinProgram {
     p6::Shader m_Program;
 
     GLint uMVPMatrix;
@@ -27,21 +27,41 @@ struct BoidProgram {
     GLint uLightPos_vs;
     GLint uLightIntensity;
 
-    BoidProgram()
+    PenguinProgram()
         : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/pointLight.fs.glsl"))
     {
         uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
         uMVMatrix     = glGetUniformLocation(m_Program.id(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
 
-        uKa = glGetUniformLocation(m_Program.id(), "uKa");
-
+        uKa             = glGetUniformLocation(m_Program.id(), "uKa");
         uKd             = glGetUniformLocation(m_Program.id(), "uKd");
         uKs             = glGetUniformLocation(m_Program.id(), "uKs");
         uShininess      = glGetUniformLocation(m_Program.id(), "uShininess");
         uLightPos_vs    = glGetUniformLocation(m_Program.id(), "uLightPos_vs");
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
+
+
     }
+};
+
+struct Boid_behavior_params {
+    float align_factor;
+    float align_radius;
+    float avoid_factor;
+    float avoid_radius;
+    float draw_radius;
+    float max_speed;
+    float min_speed;
+};
+
+struct Environment_params {
+    float speed_multiplier;
+    float aspect_ratio;
+    float screen_margin;
+    bool  show_align_circle;
+    bool  show_avoid_circle;
+    float z_limit;
 };
 
 class Boid3D {
@@ -52,30 +72,10 @@ private:
 public:
     explicit Boid3D(glm::vec3 initial_position)
         : _pos(initial_position), //
-        _speed(p6::random::number(-.001, .001), p6::random::number(-.001, .001), p6::random::number(-.001, .001))
+        _speed(glm::vec3(p6::random::number(-.001, .001),
+                         p6::random::number(-.001, .001),
+                         p6::random::number(-.001, .001)))
     {
-    }
-
-    /*
-    void drawBody(p6::Context& ctx, float draw_radius) const
-    {
-        ctx.use_stroke = false;
-        ctx.use_fill   = true;
-        ctx.circle(
-            p6::Center{_pos.x, _pos.y},
-            p6::Radius{draw_radius}
-        );
-    }
-
-    void drawHelper(p6::Context& ctx, float radius, float stroke_weight) const
-    {
-        ctx.stroke_weight = stroke_weight;
-        ctx.use_stroke    = true;
-        ctx.use_fill      = false;
-        ctx.circle(
-            p6::Center{_pos.x, _pos.y},
-            p6::Radius{radius}
-        );
     }
 
     void adaptSpeedToBorders(Environment_params environment, Boid_behavior_params params)
@@ -92,13 +92,19 @@ public:
 
         else if (_pos.y < -1 + environment.screen_margin) // Bottom
             _speed.y += turn_factor;
+
+        if (_pos.z > environment.z_limit) // Front
+            _speed.z -= turn_factor;
+
+        else if (_pos.z < -environment.z_limit) // Back
+            _speed.z += turn_factor;
     }
 
     void adaptSpeedToBoids(std::vector<Boid3D>& boids, Environment_params environment, Boid_behavior_params params)
     {
-        glm::vec2 avoid_vec = {0, 0};
-        glm::vec2 align_vec = {0, 0};
-        int       friends   = 0;
+        glm::vec3 avoid_vec = glm::vec3(0, 0, 0);
+        glm::vec3 align_vec = glm::vec3(0, 0, 0);
+        int friends = 0;
         for (auto& other : boids)
         {
             if (_pos != other._pos) // if not itself
@@ -125,40 +131,63 @@ public:
 
     void clampSpeed(Boid_behavior_params params)
     {
-        float max_speed    = params.max_speed / 10000;
-        float min_speed    = params.min_speed / 10000;
-        float actual_speed = sqrt(_speed.x * _speed.x + _speed.y * _speed.y);
+        float max_speed = params.max_speed / 10000;
+        float min_speed = params.min_speed / 10000;
+        float actual_speed = glm::length(_speed);
         if (actual_speed > max_speed)
         {
-            _speed.x = (_speed.x / actual_speed) * max_speed;
-            _speed.y = (_speed.y / actual_speed) * max_speed;
+            _speed = glm::normalize(_speed) * max_speed;
         }
         else if (actual_speed < min_speed)
         {
-            _speed.x = (_speed.x / actual_speed) * min_speed;
-            _speed.y = (_speed.y / actual_speed) * min_speed;
+            _speed = glm::normalize(_speed) * min_speed;
         }
     }
 
     void updatePosition(Environment_params environment)
     {
-        _pos.x += _speed.x * environment.speed_multiplier;
-        _pos.y += _speed.y * environment.speed_multiplier;
+        _pos += _speed * environment.speed_multiplier;
     }
-    */
 };
+
+
+void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<glimac::ShapeVertex>& sphereVec,
+                FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix,
+                std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
+{
+
+    // Set the MVP matrices
+    MVMatrix     = ViewMatrix.getViewMatrix();
+    MVMatrix    = glm::scale(MVMatrix, glm::vec3(0.2, 0.2, 0.2));
+    NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+
+    // Set uniform variables
+    glUniformMatrix4fv(penguinProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+    glUniformMatrix4fv(penguinProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+    glUniformMatrix4fv(penguinProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+
+    glUniform3fv(penguinProgram.uKa, 1, glm::value_ptr(Ka[i]));
+
+    glUniform3fv(penguinProgram.uKd, 1, glm::value_ptr(Kd[i]));
+    glUniform3fv(penguinProgram.uKs, 1, glm::value_ptr(Ks[i]));
+    glUniform1f(penguinProgram.uShininess, Shininess[i]);
+    glUniform3fv(penguinProgram.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
+    glUniform3fv(penguinProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
+
+    // Draw the sphere using glDrawArrays
+    glDrawArrays(GL_TRIANGLES, 0, sphereVec.size());
+}
+
 
 int main()
 {
-    int nbOfBalls = 1; // futur nombre de boid à définir en fonction du nombre de boids
-
     auto ctx = p6::Context{{window_width, window_height, "TP8_DirectionalLight"}};
     ctx.maximize_window();
 
     // BEGINNING OF MY INIT CODE//
 
     // create the programs
-    BoidProgram boid{};
+    PenguinProgram  penguin{};
 
     // init ONE vbo with coord data
     GLuint vbo = 0;
@@ -167,10 +196,10 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // sphere
-    const std::vector<glimac::ShapeVertex> sphere1 = glimac::sphere_vertices(1.f, 32, 16);
+    const std::vector<glimac::ShapeVertex> sphereVec = glimac::sphere_vertices(1.f, 32, 16);
 
     // fill those coords in the vbo / Static is for constant variables
-    glBufferData(GL_ARRAY_BUFFER, sphere1.size() * sizeof(glimac::ShapeVertex), sphere1.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sphereVec.size() * sizeof(glimac::ShapeVertex), sphereVec.data(), GL_STATIC_DRAW);
 
     // Depth option
     glEnable(GL_DEPTH_TEST);
@@ -204,10 +233,24 @@ int main()
 
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
-
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
-    glm::mat4 MVMatrix;
-    glm::mat4 NormalMatrix;
+
+    // For the boids
+    glm::mat4 MVMatrix_penguin;
+    glm::mat4 NormalMatrix_penguin;
+
+    std::vector<glm::vec3> Ka;
+    std::vector<glm::vec3> Kd;
+    std::vector<glm::vec3> Ks;
+    std::vector<float> Shininess;
+
+    for (int i = 0; i < 32; i++)
+    {
+        Ka.emplace_back(glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f));
+        Kd.emplace_back(glm::linearRand(0.f, 0.5f), glm::linearRand(0.f, 0.5f), glm::linearRand(0.f, 0.5f));
+        Ks.emplace_back(glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f), glm::linearRand(0.f, 1.f));
+        Shininess.emplace_back(glm::linearRand(0.f, 1.f));
+    }
 
     bool Z = false;
     bool Q = false;
@@ -244,27 +287,12 @@ int main()
 
         glBindVertexArray(vao);
 
-        boid.m_Program.use();
+        // boids
+        penguin.m_Program.use();
 
-        // Terre
-        MVMatrix     = ViewMatrix.getViewMatrix();
-        MVMatrix     = glm::rotate(MVMatrix, -ctx.time(), glm::vec3(0, 1, 0));
-        NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
-        glUniformMatrix4fv(boid.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-        glUniformMatrix4fv(boid.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-        glUniformMatrix4fv(boid.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-
-        glUniform3fv(boid.uKa, 1, glm::value_ptr(glm::vec3(0.0215, 0.1745, 0.0215)));
-
-        glUniform3fv(boid.uKd, 1, glm::value_ptr(glm::vec3(0.07568, 0.61424, 0.07568)));
-        glUniform3fv(boid.uKs, 1, glm::value_ptr(glm::vec3(0.633, 0.727811, 0.633)));
-        glUniform1f(boid.uShininess, 0.6);
-
-        glUniform3fv(boid.uLightPos_vs, 1, glm::value_ptr(glm::vec3(glm::rotate(ViewMatrix.getViewMatrix(), ctx.time(), glm::vec3(0, 1, 0)) * glm::vec4(1, 1, 0, 1))));
-        glUniform3fv(boid.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
-
-        glDrawArrays(GL_TRIANGLES, 0, sphere1.size());
+        for (int i = 0; i < 32; i++){
+            drawSphere(i, penguin, sphereVec, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
+        }
 
         glBindVertexArray(0);
 
