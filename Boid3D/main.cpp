@@ -93,6 +93,7 @@ int main()
         .max_speed    = 30,
         .min_speed    = 20};
 
+
     Environment_params environment_params{
         .speed_multiplier  = 1.,
         .aspect_ratio      = ctx.aspect_ratio(),
@@ -203,10 +204,11 @@ int main()
         // Initialize boids with desired parameters
         std::vector<Boid3D> boids;
         glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
+        glm::vec3 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1), p6::random::number(-1, 1)};
 
         for (int i = 0; i < 32; ++i) {
 
-            Boid3D boid(initial_position);
+            Boid3D boid(random_pos);
             boids.push_back(boid);
         }
 
@@ -234,7 +236,8 @@ int main()
             // Set the MVP matrices
             MVMatrix_penguin = ViewMatrix.getViewMatrix();
             MVMatrix_penguin = glm::translate(MVMatrix_penguin, position); // Translate to the position of the boid
-            MVMatrix_penguin = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
+            //MVMatrix_penguin = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
+            MVMatrix_penguin = glm::scale(MVMatrix_penguin,  glm::vec3(0.2, 0.2, 0.2));
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
 
 
