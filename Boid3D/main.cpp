@@ -7,7 +7,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
 
-//#include "Boid3D.h"
+// #include "Boid3D.h"
 
 #include "Gui.h"
 
@@ -43,24 +43,11 @@ struct PenguinProgram {
         uShininess      = glGetUniformLocation(m_Program.id(), "uShininess");
         uLightPos_vs    = glGetUniformLocation(m_Program.id(), "uLightPos_vs");
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
-
-
     }
 };
 
-
-
-
-void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<glimac::ShapeVertex>& sphereVec,
-                FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix,
-                std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
+void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<glimac::ShapeVertex>& sphereVec, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
-
-    // Set the MVP matrices
-    //MVMatrix     = ViewMatrix.getViewMatrix();
-    //MVMatrix    = glm::scale(MVMatrix, glm::vec3(0.2, 0.2, 0.2));
-    //NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
     // Set uniform variables
     glUniformMatrix4fv(penguinProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
     glUniformMatrix4fv(penguinProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
@@ -78,7 +65,6 @@ void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<g
     glDrawArrays(GL_TRIANGLES, 0, sphereVec.size());
 }
 
-
 int main()
 {
     auto ctx = p6::Context{{window_width, window_height, "Boid3D"}};
@@ -95,22 +81,20 @@ int main()
         .max_speed    = 30,
         .min_speed    = 20};
 
-
     Environment_params environment_params{
         .speed_multiplier  = 1.,
         .aspect_ratio      = ctx.aspect_ratio(),
         .screen_margin     = .1,
         .show_align_circle = true,
         .show_avoid_circle = true,
-        .z_limit = 1.
-    };
+        .z_limit           = 1.};
 
     const int NbBoid = 50;
 
     // BEGINNING OF MY INIT CODE//
 
     // create the programs
-    PenguinProgram  penguin{};
+    PenguinProgram penguin{};
 
     // init ONE vbo with coord data
     GLuint vbo = 0;
@@ -156,7 +140,7 @@ int main()
 
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
-    glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
+    glm::mat4     ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
 
     // For the boids
     glm::mat4 MVMatrix_penguin;
@@ -165,7 +149,7 @@ int main()
     std::vector<glm::vec3> Ka;
     std::vector<glm::vec3> Kd;
     std::vector<glm::vec3> Ks;
-    std::vector<float> Shininess;
+    std::vector<float>     Shininess;
 
     for (int i = 0; i < NbBoid; i++)
     {
@@ -184,23 +168,19 @@ int main()
 
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
-
     // Initialize boids with desired parameters
     std::vector<Boid3D> boids;
-    //glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
+    // glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
     glm::vec3 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1), p6::random::number(-1, 1)};
 
-    for (int i = 0; i < NbBoid; ++i) {
-
+    for (int i = 0; i < NbBoid; ++i)
+    {
         Boid3D boid(random_pos);
         boids.push_back(boid);
     }
 
-
     /* Loop until the user closes the window */
     ctx.update = [&]() {
-
-
         createGuiFromParams(&small_boid_params, "Small Boids");
         createMainGui(&environment_params);
 
@@ -224,8 +204,6 @@ int main()
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-
         // BEGIN OF MY DRAW CODE//
 
         glBindVertexArray(vao);
@@ -233,8 +211,8 @@ int main()
         // boids
         penguin.m_Program.use();
 
-        for (auto& boid : boids){
-
+        for (auto& boid : boids)
+        {
             int i = 0;
 
             // Update boid positions and velocities based on behavior rules
@@ -247,18 +225,14 @@ int main()
             glm::vec3 position = boid.getPosition();
 
             // Set the MVP matrices
-            MVMatrix_penguin = ViewMatrix.getViewMatrix();
-            MVMatrix_penguin = glm::translate(MVMatrix_penguin, position); // Translate to the position of the boid
-            MVMatrix_penguin = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
-            //MVMatrix_penguin = glm::scale(MVMatrix_penguin,  glm::vec3(0.2, 0.2, 0.2));
+            MVMatrix_penguin     = ViewMatrix.getViewMatrix();
+            MVMatrix_penguin     = glm::translate(MVMatrix_penguin, position);                                                                                           // Translate to the position of the boid
+            MVMatrix_penguin     = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
-
 
             drawSphere(i, penguin, sphereVec, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
             i++;
         }
-
-
 
         glBindVertexArray(0);
 
