@@ -7,7 +7,9 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
 
-#include "Boid3D.h"
+//#include "Boid3D.h"
+
+#include "Gui.h"
 
 int const window_width  = 1920;
 int const window_height = 1080;
@@ -99,7 +101,9 @@ int main()
         .aspect_ratio      = ctx.aspect_ratio(),
         .screen_margin     = .1,
         .show_align_circle = true,
-        .show_avoid_circle = true};
+        .show_avoid_circle = true,
+        .z_limit = 1.
+    };
 
     const int NbBoid = 50;
 
@@ -195,6 +199,11 @@ int main()
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
+
+
+        createGuiFromParams(&small_boid_params, "Small Boids");
+        createMainGui(&environment_params);
+
         if (Z)
         {
             ViewMatrix.moveFront(0.1);
