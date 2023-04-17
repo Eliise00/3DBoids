@@ -89,7 +89,7 @@ int main()
         .align_radius = 20.,
         .avoid_factor = 2.,
         .avoid_radius = 6.,
-        .draw_radius  = .01,
+        .draw_radius  = .05,
         .max_speed    = 30,
         .min_speed    = 20};
 
@@ -101,6 +101,7 @@ int main()
         .show_align_circle = true,
         .show_avoid_circle = true};
 
+    const int NbBoid = 50;
 
     // BEGINNING OF MY INIT CODE//
 
@@ -162,7 +163,7 @@ int main()
     std::vector<glm::vec3> Ks;
     std::vector<float> Shininess;
 
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < NbBoid; i++)
     {
         Ka.emplace_back(glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f));
         Kd.emplace_back(glm::linearRand(0.f, 0.5f), glm::linearRand(0.f, 0.5f), glm::linearRand(0.f, 0.5f));
@@ -182,10 +183,10 @@ int main()
 
     // Initialize boids with desired parameters
     std::vector<Boid3D> boids;
-    glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
+    //glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
     glm::vec3 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1), p6::random::number(-1, 1)};
 
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < NbBoid; ++i) {
 
         Boid3D boid(random_pos);
         boids.push_back(boid);
@@ -239,8 +240,8 @@ int main()
             // Set the MVP matrices
             MVMatrix_penguin = ViewMatrix.getViewMatrix();
             MVMatrix_penguin = glm::translate(MVMatrix_penguin, position); // Translate to the position of the boid
-            //MVMatrix_penguin = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
-            MVMatrix_penguin = glm::scale(MVMatrix_penguin,  glm::vec3(0.2, 0.2, 0.2));
+            MVMatrix_penguin = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
+            //MVMatrix_penguin = glm::scale(MVMatrix_penguin,  glm::vec3(0.2, 0.2, 0.2));
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
 
 
