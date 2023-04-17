@@ -36,6 +36,7 @@ public:
     {
     }
 
+
     void adaptSpeedToBorders(Environment_params environment, Boid_behavior_params params)
     {
         float turn_factor = (params.avoid_factor * environment.speed_multiplier) / 10000;
@@ -105,5 +106,9 @@ public:
     void updatePosition(Environment_params environment)
     {
         _pos += _speed * environment.speed_multiplier;
+    }
+
+    glm::vec3 getPosition() {
+        return _pos;
     }
 };

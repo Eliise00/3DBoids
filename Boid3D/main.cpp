@@ -55,9 +55,9 @@ void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<g
 {
 
     // Set the MVP matrices
-    MVMatrix     = ViewMatrix.getViewMatrix();
-    MVMatrix    = glm::scale(MVMatrix, glm::vec3(0.2, 0.2, 0.2));
-    NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+    //MVMatrix     = ViewMatrix.getViewMatrix();
+    //MVMatrix    = glm::scale(MVMatrix, glm::vec3(0.2, 0.2, 0.2));
+    //NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
     // Set uniform variables
     glUniformMatrix4fv(penguinProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
@@ -79,7 +79,7 @@ void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<g
 
 int main()
 {
-    auto ctx = p6::Context{{window_width, window_height, "TP8_DirectionalLight"}};
+    auto ctx = p6::Context{{window_width, window_height, "Boid3D"}};
     ctx.maximize_window();
 
     // BOID PARAMETERS //
@@ -92,24 +92,6 @@ int main()
         .draw_radius  = .01,
         .max_speed    = 30,
         .min_speed    = 20};
-
-    Boid_behavior_params big_boid_params{
-        .align_factor = 12.,
-        .align_radius = 40.,
-        .avoid_factor = 4.,
-        .avoid_radius = 12.,
-        .draw_radius  = .08,
-        .max_speed    = 8,
-        .min_speed    = 6};
-
-    Boid_behavior_params maxi_boid_params{
-        .align_factor = 12.,
-        .align_radius = 40.,
-        .avoid_factor = 4.,
-        .avoid_radius = 2.,
-        .draw_radius  = .2,
-        .max_speed    = 4,
-        .min_speed    = 3};
 
     Environment_params environment_params{
         .speed_multiplier  = 1.,
@@ -236,9 +218,30 @@ int main()
         // boids
         penguin.m_Program.use();
 
-        for (int i = 0; i < 32; i++){
+        for (auto& boid : boids){
+
+            int i = 0;
+
+            // Update boid positions and velocities based on behavior rules
+            boid.adaptSpeedToBorders(environment_params, small_boid_params);
+            boid.adaptSpeedToBoids(boids, environment_params, small_boid_params);
+            boid.clampSpeed(small_boid_params);
+            boid.updatePosition(environment_params);
+
+            // Get the position of the boid
+            glm::vec3 position = boid.getPosition();
+
+            // Set the MVP matrices
+            MVMatrix_penguin = ViewMatrix.getViewMatrix();
+            MVMatrix_penguin = glm::translate(MVMatrix_penguin, position); // Translate to the position of the boid
+            MVMatrix_penguin = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
+            NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
+
+
             drawSphere(i, penguin, sphereVec, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
+            i++;
         }
+
 
 
         glBindVertexArray(0);
