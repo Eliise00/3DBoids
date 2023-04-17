@@ -179,6 +179,19 @@ int main()
 
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
+
+    // Initialize boids with desired parameters
+    std::vector<Boid3D> boids;
+    glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
+    glm::vec3 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1), p6::random::number(-1, 1)};
+
+    for (int i = 0; i < 32; ++i) {
+
+        Boid3D boid(random_pos);
+        boids.push_back(boid);
+    }
+
+
     /* Loop until the user closes the window */
     ctx.update = [&]() {
         if (Z)
@@ -201,16 +214,6 @@ int main()
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Initialize boids with desired parameters
-        std::vector<Boid3D> boids;
-        glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
-        glm::vec3 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1), p6::random::number(-1, 1)};
-
-        for (int i = 0; i < 32; ++i) {
-
-            Boid3D boid(random_pos);
-            boids.push_back(boid);
-        }
 
 
         // BEGIN OF MY DRAW CODE//
