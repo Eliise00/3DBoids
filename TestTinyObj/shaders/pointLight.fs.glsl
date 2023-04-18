@@ -22,10 +22,10 @@ uniform vec3 uLightIntensity; //Li
 vec3 blinnPhong() {
     float d = distance(vPosition_vs, uLightPos_vs);
     vec3 Li = (uLightIntensity / (d * d));
-    vec3 N = vNormal_vs;
+    vec3 N = normalize(vNormal_vs);
     vec3 w0 = normalize(-vPosition_vs);
     vec3 wi = normalize(uLightPos_vs - vPosition_vs);
-    vec3 halfVector = (w0 + wi)/2.f;
+    vec3 halfVector = normalize(w0 + wi);
 
     return uKa + Li*(uKd*max(dot(wi, N), 0.) + uKs*pow(max(dot(halfVector, N), 0.), uShininess));
 }
