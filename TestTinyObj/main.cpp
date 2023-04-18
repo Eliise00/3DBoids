@@ -30,7 +30,7 @@ struct EarthProgram {
     GLint uLightIntensity;
 
     EarthProgram()
-        : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/pointLight.fs.glsl"))
+        : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/directionalLight.fs.glsl"))
     {
         uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
         uMVMatrix     = glGetUniformLocation(m_Program.id(), "uMVMatrix");
@@ -170,10 +170,10 @@ int main()
         glUniform3fv(earth.uKa, 1, glm::value_ptr(glm::vec3(0.25, 0, 0.25)));
         glUniform3fv(earth.uKd, 1, glm::value_ptr(glm::vec3(0.07568, 0.61424, 0.07568)));
         glUniform3fv(earth.uKs, 1, glm::value_ptr(glm::vec3(0.633, 0.727811, 0.633)));
-        glUniform1f(earth.uShininess, 1);
+        glUniform1f(earth.uShininess, 0.6);
 
         glUniform3fv(earth.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-3, -3, -3)));
-        glUniform3fv(earth.uLightIntensity, 1, glm::value_ptr(glm::vec3(2, 2, 2)));
+        glUniform3fv(earth.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
 
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
