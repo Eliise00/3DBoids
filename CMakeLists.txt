@@ -4,6 +4,11 @@ cmake_minimum_required(VERSION 3.20)
 # ---Choose project name---
 project(OpenGL-TPs-Template)
 
+#TEST
+# ---Choose C++ version---
+set(CMAKE_CXX_STANDARD 11)
+
+
 # ---Add Boid library---
 include(FetchContent)
 FetchContent_Declare(
@@ -12,6 +17,10 @@ FetchContent_Declare(
     GIT_TAG b9e6366e1198abdd7bc835e6125f9ff5b89a75b8
 )
 FetchContent_MakeAvailable(Boid)
+
+#TEST
+# ---Add Tinyobj library---
+add_subdirectory(tinyobjloader)
 
 # ---Create a target for each exercise---
 function(add_exercise EXERCISE_NAME)
@@ -39,6 +48,11 @@ function(add_exercise EXERCISE_NAME)
     # ---Link Boid library---
     target_link_libraries(${TARGET_NAME} PRIVATE p6::p6)
 
+    #TEST
+    # ---Link Tinyobj library---
+    target_link_libraries(${TARGET_NAME} PRIVATE tinyobjloader)
+
+
     # ---Set the output folder---
     set_target_properties(${TARGET_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${EXERCISE_NAME})
@@ -61,5 +75,6 @@ add_exercise(TP7_FreeflyCam)
 add_exercise(TP8_DirectionalLight)
 add_exercise(TP8_PointLight)
 add_exercise(Boid3D)
+add_exercise(TestTinyObj)
 
 

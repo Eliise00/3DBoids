@@ -6,15 +6,12 @@
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
-
-
-#include "Gui.h"
-#include "tiny_obj_loader.h"
+#include "p6/p6.h"
 
 int const window_width  = 1920;
 int const window_height = 1080;
 
-struct PenguinProgram {
+struct EarthProgram {
     p6::Shader m_Program;
 
     GLint uMVPMatrix;
@@ -30,7 +27,7 @@ struct PenguinProgram {
     GLint uLightPos_vs;
     GLint uLightIntensity;
 
-    PenguinProgram()
+    EarthProgram()
         : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/pointLight.fs.glsl"))
     {
         uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
@@ -38,63 +35,26 @@ struct PenguinProgram {
         uNormalMatrix = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
 
         uKa             = glGetUniformLocation(m_Program.id(), "uKa");
+
         uKd             = glGetUniformLocation(m_Program.id(), "uKd");
         uKs             = glGetUniformLocation(m_Program.id(), "uKs");
         uShininess      = glGetUniformLocation(m_Program.id(), "uShininess");
         uLightPos_vs    = glGetUniformLocation(m_Program.id(), "uLightPos_vs");
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
+
     }
 };
 
-void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<glimac::ShapeVertex>& sphereVec, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
-{
-    // Set uniform variables
-    glUniformMatrix4fv(penguinProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-    glUniformMatrix4fv(penguinProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-    glUniformMatrix4fv(penguinProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-
-    glUniform3fv(penguinProgram.uKa, 1, glm::value_ptr(Ka[i]));
-
-    glUniform3fv(penguinProgram.uKd, 1, glm::value_ptr(Kd[i]));
-    glUniform3fv(penguinProgram.uKs, 1, glm::value_ptr(Ks[i]));
-    glUniform1f(penguinProgram.uShininess, Shininess[i]);
-    glUniform3fv(penguinProgram.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
-    glUniform3fv(penguinProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
-
-    // Draw the sphere using glDrawArrays
-    glDrawArrays(GL_TRIANGLES, 0, sphereVec.size());
-}
-
 int main()
 {
-    auto ctx = p6::Context{{window_width, window_height, "Boid3D"}};
+    auto ctx = p6::Context{{window_width, window_height, "TP8_DirectionalLight"}};
     ctx.maximize_window();
-
-    // BOID PARAMETERS //
-
-    Boid_behavior_params small_boid_params{
-        .align_factor = 6.,
-        .align_radius = 20.,
-        .avoid_factor = 2.,
-        .avoid_radius = 6.,
-        .draw_radius  = .05,
-        .max_speed    = 30,
-        .min_speed    = 20};
-
-    Environment_params environment_params{
-        .speed_multiplier  = 1.,
-        .aspect_ratio      = ctx.aspect_ratio(),
-        .screen_margin     = .1,
-        .show_align_circle = true,
-        .show_avoid_circle = true,
-        .z_limit           = 1.};
-
-    const int NbBoid = 50;
 
     // BEGINNING OF MY INIT CODE//
 
     // create the programs
-    PenguinProgram penguin{};
+    EarthProgram earth{};
+
 
     // init ONE vbo with coord data
     GLuint vbo = 0;
@@ -103,10 +63,10 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // sphere
-    const std::vector<glimac::ShapeVertex> sphereVec = glimac::sphere_vertices(1.f, 32, 16);
+    const std::vector<glimac::ShapeVertex> sphere1 = glimac::sphere_vertices(1.f, 32, 16);
 
     // fill those coords in the vbo / Static is for constant variables
-    glBufferData(GL_ARRAY_BUFFER, sphereVec.size() * sizeof(glimac::ShapeVertex), sphereVec.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sphere1.size() * sizeof(glimac::ShapeVertex), sphere1.data(), GL_STATIC_DRAW);
 
     // Depth option
     glEnable(GL_DEPTH_TEST);
@@ -140,18 +100,17 @@ int main()
 
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
-    glm::mat4     ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
 
-    // For the boids
-    glm::mat4 MVMatrix_penguin;
-    glm::mat4 NormalMatrix_penguin;
+    glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
+    glm::mat4 MVMatrix;
+    glm::mat4 NormalMatrix;
+
 
     std::vector<glm::vec3> Ka;
     std::vector<glm::vec3> Kd;
     std::vector<glm::vec3> Ks;
     std::vector<float>     Shininess;
-
-    for (int i = 0; i < NbBoid; i++)
+    for (int i = 0; i < 32; i++)
     {
         Ka.emplace_back(glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f));
         Kd.emplace_back(glm::linearRand(0.f, 0.5f), glm::linearRand(0.f, 0.5f), glm::linearRand(0.f, 0.5f));
@@ -168,22 +127,8 @@ int main()
 
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
-    // Initialize boids with desired parameters
-    std::vector<Boid3D> boids;
-    // glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
-    glm::vec3 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1), p6::random::number(-1, 1)};
-
-    for (int i = 0; i < NbBoid; ++i)
-    {
-        Boid3D boid(random_pos);
-        boids.push_back(boid);
-    }
-
     /* Loop until the user closes the window */
     ctx.update = [&]() {
-        createGuiFromParams(&small_boid_params, "Small Boids");
-        createMainGui(&environment_params);
-
         if (Z)
         {
             ViewMatrix.moveFront(0.1);
@@ -208,31 +153,27 @@ int main()
 
         glBindVertexArray(vao);
 
-        // boids
-        penguin.m_Program.use();
+        earth.m_Program.use();
 
-        for (auto& boid : boids)
-        {
-            int i = 0;
+        // Terre
+        MVMatrix     = ViewMatrix.getViewMatrix();
+        MVMatrix     = glm::rotate(MVMatrix, -ctx.time(), glm::vec3(0, 1, 0));
+        NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
-            // Update boid positions and velocities based on behavior rules
-            boid.adaptSpeedToBorders(environment_params, small_boid_params);
-            boid.adaptSpeedToBoids(boids, environment_params, small_boid_params);
-            boid.clampSpeed(small_boid_params);
-            boid.updatePosition(environment_params);
+        glUniformMatrix4fv(earth.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+        glUniformMatrix4fv(earth.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+        glUniformMatrix4fv(earth.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
-            // Get the position of the boid
-            glm::vec3 position = boid.getPosition();
+        glUniform3fv(earth.uKa, 1, glm::value_ptr(glm::vec3(0.0215, 0.1745, 0.0215)));
 
-            // Set the MVP matrices
-            MVMatrix_penguin     = ViewMatrix.getViewMatrix();
-            MVMatrix_penguin     = glm::translate(MVMatrix_penguin, position);                                                                                           // Translate to the position of the boid
-            MVMatrix_penguin     = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
-            NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
+        glUniform3fv(earth.uKd, 1, glm::value_ptr(glm::vec3(0.07568, 0.61424, 0.07568)));
+        glUniform3fv(earth.uKs, 1, glm::value_ptr(glm::vec3(0.633, 0.727811, 0.633)));
+        glUniform1f(earth.uShininess, 0.6);
 
-            drawSphere(i, penguin, sphereVec, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
-            i++;
-        }
+        glUniform3fv(earth.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
+        glUniform3fv(earth.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
+
+        glDrawArrays(GL_TRIANGLES, 0, sphere1.size());
 
         glBindVertexArray(0);
 
