@@ -1,13 +1,13 @@
 #include <vector>
+
 #include "glimac/FreeflyCamera.hpp"
-#include "glimac/sphere_vertices.hpp"
 #include "glm/ext/scalar_constants.hpp"
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
 
-#include "Program.h"
-#include "Gui.h"
+#include "Gui.hpp"
+#include "Program.hpp"
 #include "tiny_obj_loader.h"
 
 int const window_width  = 1920;
@@ -33,6 +33,9 @@ void drawSphere(int i, const PenguinProgram& penguinProgram, const std::vector<g
     // Draw the sphere using glDrawArrays
     glDrawArrays(GL_TRIANGLES, 0, sphereVec.size());
 }*/
+
+
+
 
 void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
@@ -87,6 +90,8 @@ int main()
 
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+
     std::string warn, err;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, nullptr, &warn, &err, "assets/models/penguin.obj");
@@ -139,8 +144,9 @@ int main()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
+ /*
     //sphere
-    /*
+
     // enable the INDEX attribut we want / POSITION is index 0 by default
     const GLuint VERTEX_ATTR_POSITION = 0;
     const GLuint VERTEX_ATTR_NORM     = 1;
@@ -156,13 +162,15 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // debind the vao
     glBindVertexArray(0);
-     */
+    */
 
     //penguin
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
+
+
 
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
