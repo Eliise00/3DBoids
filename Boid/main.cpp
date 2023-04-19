@@ -31,14 +31,14 @@ private:
     float     _radius;
 
 public:
-    explicit Boid(glm::vec2 initial_position, float radius)
+    explicit Boid(const glm::vec2& initial_position, const float& radius)
         : _pos(initial_position), //
         _speed(p6::random::number(-.001, .001), p6::random::number(-.001, .001))
         , _radius(radius)
     {
     }
 
-    void drawBody(p6::Context& ctx, float draw_radius) const
+    void drawBody(p6::Context& ctx, const float& draw_radius) const
     {
         ctx.use_stroke = false;
         ctx.use_fill   = true;
@@ -48,7 +48,7 @@ public:
         );
     }
 
-    void drawHelper(p6::Context& ctx, float radius, float stroke_weight) const
+    void drawHelper(p6::Context& ctx, const float& radius, const float& stroke_weight) const
     {
         ctx.stroke_weight = stroke_weight;
         ctx.use_stroke    = true;
@@ -59,28 +59,28 @@ public:
         );
     }
 
-    void adaptSpeedToBorders(Environment_params environment, Boid_behavior_params params)
+    void adaptSpeedToBorders(const Environment_params& environment, const Boid_behavior_params& params)
     {
         float turn_factor = (params.avoid_factor * environment.speed_multiplier) / 10000;
-        if (_pos.x > environment.aspect_ratio - environment.screen_margin * environment.aspect_ratio) // Right
+        if (_pos.x + (_radius / 2) > environment.aspect_ratio - environment.screen_margin * environment.aspect_ratio) // Right
             _speed.x -= turn_factor;
 
-        else if (_pos.x < -environment.aspect_ratio + environment.screen_margin * environment.aspect_ratio) // Left
+        else if (_pos.x - (_radius / 2) < -environment.aspect_ratio + environment.screen_margin * environment.aspect_ratio) // Left
             _speed.x += turn_factor;
 
-        if (_pos.y > 1 - environment.screen_margin) // Top
+        if (_pos.y + (_radius / 2) > 1 - environment.screen_margin) // Top
             _speed.y -= turn_factor;
 
-        else if (_pos.y < -1 + environment.screen_margin) // Bottom
+        else if (_pos.y - (_radius / 2) < -1 + environment.screen_margin) // Bottom
             _speed.y += turn_factor;
     }
 
-    void adaptSpeedToBoids(std::vector<Boid>& boids, Environment_params environment, Boid_behavior_params params)
+    void adaptSpeedToBoids(const std::vector<Boid>& boids, const Environment_params& environment, const Boid_behavior_params& params)
     {
         glm::vec2 avoid_vec = {0, 0};
         glm::vec2 align_vec = {0, 0};
         int       friends   = 0;
-        for (auto& other : boids)
+        for (const auto& other : boids)
         {
             if (_pos != other._pos) // if not itself
             {
@@ -104,7 +104,7 @@ public:
         }
     }
 
-    void clampSpeed(Boid_behavior_params params)
+    void clampSpeed(const Boid_behavior_params& params)
     {
         float max_speed    = params.max_speed / 10000;
         float min_speed    = params.min_speed / 10000;
@@ -121,15 +121,30 @@ public:
         }
     }
 
-    void updatePosition(Environment_params environment)
+    void updatePosition(const Environment_params& environment)
     {
         _pos.x += _speed.x * environment.speed_multiplier;
         _pos.y += _speed.y * environment.speed_multiplier;
+    }
+
+    void fullUpdateChain(p6::Context& ctx, const std::vector<Boid>& boids, const Environment_params& environment, const Boid_behavior_params& params)
+    {
+        adaptSpeedToBorders(environment, params);
+        adaptSpeedToBoids(boids, environment, params);
+        clampSpeed(params);
+        updatePosition(environment);
+        drawBody(ctx, params.draw_radius);
+        // Display helpers
+        if (environment.show_align_circle)
+            drawHelper(ctx, params.align_radius / 100, .001f);
+        if (environment.show_avoid_circle)
+            drawHelper(ctx, params.avoid_radius / 100, .0015f);
     }
 };
 
 void createGuiFromParams(Boid_behavior_params* params, const char* window_name)
 {
+    ImGui::SetNextWindowBgAlpha(0.);
     ImGui::Begin(window_name);
     ImGui::Text("Boid parameters");
     ImGui::SliderFloat("Avoid radius", &params->avoid_radius, 0, 64);
@@ -141,6 +156,7 @@ void createGuiFromParams(Boid_behavior_params* params, const char* window_name)
 
 void createMainGui(Environment_params* params)
 {
+    ImGui::SetNextWindowBgAlpha(0.);
     ImGui::Begin("Environment settings");
     ImGui::Text("Speed");
     ImGui::SliderFloat("Speed multiplier", &params->speed_multiplier, 1, 50);
@@ -173,31 +189,31 @@ int main()
     }
 
     Boid_behavior_params small_boid_params{
-        .align_factor = 6.,
+        .align_factor = 15.,
         .align_radius = 20.,
-        .avoid_factor = 2.,
-        .avoid_radius = 6.,
+        .avoid_factor = 3.,
+        .avoid_radius = 5.,
         .draw_radius  = .01,
         .max_speed    = 30,
-        .min_speed    = 20};
+        .min_speed    = 15};
 
     Boid_behavior_params big_boid_params{
-        .align_factor = 12.,
+        .align_factor = 2.,
         .align_radius = 40.,
-        .avoid_factor = 4.,
+        .avoid_factor = .5,
         .avoid_radius = 12.,
         .draw_radius  = .08,
         .max_speed    = 8,
-        .min_speed    = 6};
+        .min_speed    = 4};
 
     Boid_behavior_params maxi_boid_params{
-        .align_factor = 12.,
+        .align_factor = 1.,
         .align_radius = 40.,
-        .avoid_factor = 4.,
-        .avoid_radius = 2.,
+        .avoid_factor = .2,
+        .avoid_radius = 20.,
         .draw_radius  = .2,
         .max_speed    = 4,
-        .min_speed    = 3};
+        .min_speed    = 2};
 
     Environment_params environment_params{
         .speed_multiplier  = 1.,
@@ -218,44 +234,17 @@ int main()
         size_t boid_index = 0;
         for (auto& boid : Boid_array)
         {
-            if (boid_index < 70)
+            if (boid_index < 70) // many small boids
             {
-                boid.adaptSpeedToBorders(environment_params, small_boid_params);
-                boid.adaptSpeedToBoids(Boid_array, environment_params, small_boid_params);
-                boid.clampSpeed(small_boid_params);
-                boid.updatePosition(environment_params);
-                boid.drawBody(ctx, small_boid_params.draw_radius);
-                // Display helpers
-                if (environment_params.show_align_circle)
-                    boid.drawHelper(ctx, small_boid_params.align_radius / 100, .001f);
-                if (environment_params.show_avoid_circle)
-                    boid.drawHelper(ctx, small_boid_params.avoid_radius / 100, .0015f);
+                boid.fullUpdateChain(ctx, Boid_array, environment_params, small_boid_params);
             }
-            else if (boid_index == 74)
+            else if (boid_index == 74) // one huge boid
             {
-                boid.adaptSpeedToBorders(environment_params, maxi_boid_params);
-                boid.adaptSpeedToBoids(Boid_array, environment_params, maxi_boid_params);
-                boid.clampSpeed(maxi_boid_params);
-                boid.updatePosition(environment_params);
-                boid.drawBody(ctx, maxi_boid_params.draw_radius);
-                // Display helpers
-                if (environment_params.show_align_circle)
-                    boid.drawHelper(ctx, maxi_boid_params.align_radius / 100, .001f);
-                if (environment_params.show_avoid_circle)
-                    boid.drawHelper(ctx, maxi_boid_params.avoid_radius / 100, .0015f);
+                boid.fullUpdateChain(ctx, Boid_array, environment_params, maxi_boid_params);
             }
-            else
+            else // some big boids
             {
-                boid.adaptSpeedToBorders(environment_params, big_boid_params);
-                boid.adaptSpeedToBoids(Boid_array, environment_params, big_boid_params);
-                boid.clampSpeed(big_boid_params);
-                boid.updatePosition(environment_params);
-                boid.drawBody(ctx, big_boid_params.draw_radius);
-                // Display helpers
-                if (environment_params.show_align_circle)
-                    boid.drawHelper(ctx, big_boid_params.align_radius / 100, .001f);
-                if (environment_params.show_avoid_circle)
-                    boid.drawHelper(ctx, big_boid_params.avoid_radius / 100, .0015f);
+                boid.fullUpdateChain(ctx, Boid_array, environment_params, big_boid_params);
             }
             boid_index++;
         }
