@@ -2,7 +2,6 @@
 #include <vector>
 #include <unordered_set>
 #include "glimac/FreeflyCamera.hpp"
-#include "glimac/sphere_vertices.hpp"
 #include "glm/ext/scalar_constants.hpp"
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/type_ptr.hpp"

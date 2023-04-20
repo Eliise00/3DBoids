@@ -9,7 +9,7 @@ struct PenguinProgram {
     GLint uMVPMatrix;
     GLint uMVMatrix;
     GLint uNormalMatrix;
-
+    GLint uTexture;
     GLint uKa;
     GLint uKd;
     GLint uKs;
@@ -23,6 +23,8 @@ struct PenguinProgram {
         uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
         uMVMatrix     = glGetUniformLocation(m_Program.id(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
+
+        uTexture = glGetUniformLocation(m_Program.id(), "uTexture");
 
         uKa             = glGetUniformLocation(m_Program.id(), "uKa");
         uKd             = glGetUniformLocation(m_Program.id(), "uKd");
