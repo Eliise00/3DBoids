@@ -63,7 +63,7 @@ int main()
     //////Texture
 
     GLuint textureID = 0;
-    const auto textureCube = p6::load_image_buffer("assets/models/texture_cube_test.png");
+    const auto textureCube = p6::load_image_buffer("assets/models/texture_cube_test.jpg");
 
     glGenTextures(1, &textureID);
     glActiveTexture(GL_TEXTURE0);
