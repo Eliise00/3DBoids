@@ -1,10 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <unordered_set>
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/sphere_vertices.hpp"
 #include "glm/ext/scalar_constants.hpp"
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/string_cast.hpp"
 #include "img/src/Image.h"
 #include "p6/p6.h"
 
@@ -67,7 +69,7 @@ int main()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureCube.width(), textureCube.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, textureCube.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureCube.width(), textureCube.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureCube.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -93,77 +95,43 @@ int main()
         exit(1);
     }
 
+
+    // New loop
     std::vector<glimac::ShapeVertex> vertices;
+    ////// 8 IS THE NUMBER OF VERTICES //////
+    ////// TOD0 : CHANGE THIS NUMBER FOR PENGUIN
+    for (int i=0; i<8; i++){
+        glimac::ShapeVertex newVertex = glimac::ShapeVertex(
 
-    for (size_t s = 0; s < shapes.size(); s++) {
-        // Loop over faces(polygon)
-        size_t index_offset = 0;
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
-            size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
+            // POSITION
+            glm::vec3(
+                tinyobj::real_t(attrib.vertices[i*3]),
+                tinyobj::real_t(attrib.vertices[i*3+1]),
+                tinyobj::real_t(attrib.vertices[i*3+2])
+            ),
 
-            // Loop over vertices in the face.
-            for (size_t v = 0; v < fv; v++) {
+            // NORMAL
+            glm::vec3(
+                tinyobj::real_t(attrib.normals[i*3+0]),  // nx
+                tinyobj::real_t(attrib.normals[i*3+1]),  // ny
+                tinyobj::real_t(attrib.normals[i*3+2])   // nz
+            ),
 
-                tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-                // access to vertex
-                glimac::ShapeVertex newVertex = glimac::ShapeVertex(
-
-                    // POSITION
-                    glm::vec3(
-                        tinyobj::real_t(attrib.vertices[3*size_t(idx.vertex_index)+0]),
-                        tinyobj::real_t(attrib.vertices[3*size_t(idx.vertex_index)+1]),
-                        tinyobj::real_t(attrib.vertices[3*size_t(idx.vertex_index)+2])
-                    ),
-
-                    // NORMAL
-                    glm::vec3(
-                        tinyobj::real_t(attrib.normals[3*size_t(idx.normal_index)+0]),  // nx
-                        tinyobj::real_t(attrib.normals[3*size_t(idx.normal_index)+1]),  // ny
-                        tinyobj::real_t(attrib.normals[3*size_t(idx.normal_index)+2])   // nz
-                    ),
-
-                    // TEXTURE_COORDINATES
-                    glm::vec2(
-                        tinyobj::real_t(attrib.texcoords[2*size_t(idx.texcoord_index)+0]),  //tx
-                        tinyobj::real_t(attrib.texcoords[2*size_t(idx.texcoord_index)+1])   //ty
-                    )
-                );
-
-                vertices.push_back(newVertex);
-            }
-            index_offset += fv;
-        }
+            // TEXTURE_COORDINATES
+            glm::vec2(
+                tinyobj::real_t(attrib.texcoords[i*2+0]),  //tx
+                tinyobj::real_t(attrib.texcoords[i*2+1])   //ty
+            )
+        );
+        vertices.push_back(newVertex);
     }
 
-
-
-
-
-    // Extract the vertices
-    //std::vector<float> vertices;
-/*
-    for (size_t i = 0; i < attrib.vertices.size(); i += 3) {
-        vertices.push_back(attrib.vertices[i]);
-        vertices.push_back(attrib.vertices[i + 1]);
-        vertices.push_back(attrib.vertices[i + 2]);
-
-    }*/
-
-    //Extract normals
-    std::vector<float> normals;
-    for (size_t i = 0; i < attrib.normals.size(); i += 3) {
-        normals.push_back(attrib.normals[i]);
-        normals.push_back(attrib.normals[i + 1]);
-        normals.push_back(attrib.normals[i + 2]);
-
+    for(int i = 0; i < vertices.size(); i++){
+        std::cout << glm::to_string(vertices[i].position) << std::endl;
+        std::cout << glm::to_string(vertices[i].normal) << std::endl;
+        std::cout << glm::to_string(vertices[i].texCoords) << std::endl;
     }
-
-    //Extract Texture coordinates
-    std::vector<float> texCoords;
-    for (size_t i = 0; i < attrib.texcoords.size(); i += 2) {
-        texCoords.push_back(attrib.texcoords[i]);
-        texCoords.push_back(attrib.texcoords[i + 1]);
-    }
+    std::cout <<vertices.size()<< std::endl;
 
 
     // Extract the indices
@@ -174,6 +142,10 @@ int main()
         }
     }
 
+    for(int i = 0; i < indices.size(); i++){
+        std::cout << indices[i] << std::endl;
+    }
+    std::cout <<indices.size()<< std::endl;
 
     // Create a VBO for the model
     GLuint vbo = 0;
@@ -181,47 +153,33 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glimac::ShapeVertex), vertices.data(), GL_STATIC_DRAW);
 
-
-    // Create VBO for normals
-    GLuint normalVBO = 0;
-    glGenBuffers(1, &normalVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glimac::ShapeVertex) , normals.data(), GL_STATIC_DRAW);
-
-
-    // Create a VBO for the texture coordinates
-    GLuint texCoordsVBO = 0;
-    glGenBuffers(1, &texCoordsVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordsVBO);
-    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(glimac::ShapeVertex), texCoords.data(), GL_STATIC_DRAW);
-
+    // Create an IBO for the model
+    GLuint ibo = 0;
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // Create a VAO for the model
     GLuint vao = 0;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
 
     const GLuint VERTEX_ATTR_POSITION = 0;
     const GLuint VERTEX_ATTR_NORMAL = 1;
     const GLuint VERTEX_ATTR_TEXCOORDS = 2;
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, position));
     glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-
-    glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, normal));
     glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordsVBO);
-    glVertexAttribPointer(VERTEX_ATTR_TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, texCoords));
     glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORDS);
 
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, position));
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, texCoords));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     // MVP
@@ -240,6 +198,8 @@ int main()
     // END OF MY INIT CODE//
 
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
+
+    glEnable(GL_DEPTH_TEST);
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
@@ -277,9 +237,7 @@ int main()
         MVMatrix     = ViewMatrix.getViewMatrix();
         MVMatrix     = glm::rotate(MVMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         MVMatrix     = glm::translate(MVMatrix, glm::vec3(0.0f, -2.0f, 0.0f));
-        //MVMatrix = glm::scale(MVMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
         MVMatrix     = glm::rotate(MVMatrix, -ctx.time(), glm::vec3(0, 1, 0));
-
         NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
         glBindVertexArray(vao);
@@ -296,7 +254,7 @@ int main()
         glUniform3fv(earth.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-3, -3, -3)));
         glUniform3fv(earth.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
 
         glBindVertexArray(0);
