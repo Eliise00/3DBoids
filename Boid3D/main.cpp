@@ -13,7 +13,7 @@
 int const window_width  = 1920;
 int const window_height = 1080;
 
-
+////////// F
 
 void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
@@ -68,7 +68,7 @@ int main()
 
     // BEGINNING OF MY INIT CODE//
 
-    //////Texture
+    //////Texture - loading of the texture -> must be done at the begining of the code
 
     GLuint textureID = 0;
     const auto textureCube = p6::load_image_buffer("assets/models/texture_penguin.jpg");
@@ -81,11 +81,12 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    /////// end of the texture loading -> put it in a texture class ???
 
 
+    /////// TinyObj library : use only #include "tiny_obj_loader.h"
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
@@ -93,6 +94,7 @@ int main()
     std::string warn, err;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, nullptr, &warn, &err, "assets/models/penguin.obj");
+
     if (!warn.empty()) {
         std::cout << "Warning: " << warn << std::endl;
     }
@@ -103,10 +105,10 @@ int main()
         exit(1);
     }
 
-    // New loop
+    /////// vertices is a vector if glimac (cf. #include "glimac/common.hpp") ->take verices/normals/texCoords
     std::vector<glimac::ShapeVertex> vertices;
-    ////// 8 IS THE NUMBER OF VERTICES //////
-    ////// TOD0 : CHANGE THIS NUMBER FOR PENGUIN
+    ////// 3561 IS THE NUMBER OF VERTICES //////
+    ////// TOD0 : THIS NUMBER COULD BE A VARIABLE -> ctrl + F "v " in .obj file give you the amount of vertices
     for (int i=0; i< 3561; i++){
         glimac::ShapeVertex newVertex = glimac::ShapeVertex(
 
@@ -133,6 +135,7 @@ int main()
         vertices.push_back(newVertex);
     }
 
+    /////// loop extracting the indices of vertex for the ibo
     // Extract the indices
     std::vector<unsigned int> indices;
     for (const auto& shape : shapes) {
@@ -141,7 +144,7 @@ int main()
         }
     }
 
-
+    /////// GL code
     // Create a VBO for the model
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
@@ -162,6 +165,7 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
+    ////// the order is important
     const GLuint VERTEX_ATTR_POSITION = 0;
     const GLuint VERTEX_ATTR_NORMAL = 1;
     const GLuint VERTEX_ATTR_TEXCOORDS = 2;
@@ -178,6 +182,7 @@ int main()
     glBindVertexArray(0);
 
     // Depth option
+    //////// don't know what this do exactly but it is very important for transparency and depth
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -191,11 +196,13 @@ int main()
     glm::mat4 MVMatrix_penguin;
     glm::mat4 NormalMatrix_penguin;
 
+    // light parameter
     std::vector<glm::vec3> Ka;
     std::vector<glm::vec3> Kd;
     std::vector<glm::vec3> Ks;
     std::vector<float>     Shininess;
 
+    /////// loop that generate random parameter for the light color - maybe it's not necessary for the project
     for (int i = 0; i < NbBoid; i++)
     {
         Ka.emplace_back(glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f), glm::linearRand(0.f, 0.05f));
@@ -204,18 +211,18 @@ int main()
         Shininess.emplace_back(glm::linearRand(0.f, 1.f));
     }
 
+    //////// keyboard
     bool Z = false;
     bool Q = false;
     bool S = false;
     bool D = false;
 
     // END OF MY INIT CODE//
-
+    // Checkpoint
     std::cout << "OpenGL Version : " << glGetString(GL_VERSION) << std::endl;
 
     // Initialize boids with desired parameters
     std::vector<Boid3D> boids;
-    // glm::vec3 initial_position(1.0f, 2.0f, 3.0f);
     glm::vec3 random_pos = {p6::random::number(-ctx.aspect_ratio(), ctx.aspect_ratio()), p6::random::number(-1, 1), p6::random::number(-1, 1)};
 
     for (int i = 0; i < NbBoid; ++i)
@@ -223,6 +230,7 @@ int main()
         Boid3D boid(random_pos);
         boids.push_back(boid);
     }
+
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
@@ -251,17 +259,18 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // boids
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureID);
-
         penguin.m_Program.use();
 
+        ///////// bind the texture of the boids
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureID);
         glUniform1i(penguin.uTexture, 0);
 
         // BEGIN OF MY DRAW CODE//
 
         glBindVertexArray(vao);
 
+        /////// boid deplacement here
         for (auto& boid : boids)
         {
             int i = 0;
