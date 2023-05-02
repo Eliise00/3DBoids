@@ -1,19 +1,18 @@
 #include <vector>
-
+#include "Boid3D.hpp"
+#include "Gui.hpp"
+#include "Program.hpp"
 #include "glimac/FreeflyCamera.hpp"
+#include "glimac/common.hpp"
 #include "glm/ext/scalar_constants.hpp"
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
-#include "glimac/common.hpp"
-#include "Gui.hpp"
-#include "Program.hpp"
 #include "tiny_obj_loader.h"
+
 
 int const window_width  = 1920;
 int const window_height = 1080;
-
-
 
 void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
@@ -21,8 +20,6 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsign
     glUniformMatrix4fv(penguinProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
     glUniformMatrix4fv(penguinProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
     glUniformMatrix4fv(penguinProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-
-
 
     glUniform3fv(penguinProgram.uKa, 1, glm::value_ptr(Ka[i]));
     glUniform3fv(penguinProgram.uKd, 1, glm::value_ptr(Kd[i]));
@@ -32,7 +29,6 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsign
     glUniform3fv(penguinProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-
 }
 
 int main()
@@ -59,7 +55,7 @@ int main()
         .show_avoid_circle = true,
         .z_limit           = 1.};
 
-    const int NbBoid = 50;
+    const int NbBoid = 10;
 
     // BEGINNING OF MY INIT CODE//
 
@@ -68,9 +64,9 @@ int main()
 
     // BEGINNING OF MY INIT CODE//
 
-    //////Texture
-
-    GLuint textureID = 0;
+    //////////////////////////
+    // TEXTURE TODO: faire un texture.hpp
+    GLuint     textureID   = 0;
     const auto textureCube = p6::load_image_buffer("assets/models/texture_penguin.jpg");
 
     glGenTextures(1, &textureID);
@@ -81,53 +77,57 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //glActiveTexture(GL_TEXTURE0);
+    // glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
+    // TEXTURE
+    //////////////////////////////
 
-
-
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
+    tinyobj::attrib_t                attrib;
+    std::vector<tinyobj::shape_t>    shapes;
     std::vector<tinyobj::material_t> materials;
 
     std::string warn, err;
 
     bool ret = tinyobj::LoadObj(&attrib, &shapes, nullptr, &warn, &err, "assets/models/penguin.obj");
-    if (!warn.empty()) {
+    if (!warn.empty())
+    {
         std::cout << "Warning: " << warn << std::endl;
     }
-    if (!err.empty()) {
+    if (!err.empty())
+    {
         std::cerr << "Error: " << err << std::endl;
     }
-    if (!ret) {
+    if (!ret)
+    {
         exit(1);
     }
 
     // New loop
     std::vector<glimac::ShapeVertex> vertices;
     ////// 8 IS THE NUMBER OF VERTICES //////
-    ////// TOD0 : CHANGE THIS NUMBER FOR PENGUIN
-    for (int i=0; i< 3561; i++){
+    ////// TODO : CHANGE THIS NUMBER FOR PENGUIN
+    for (int i = 0; i < 3561; i++)
+    {
         glimac::ShapeVertex newVertex = glimac::ShapeVertex(
 
             // POSITION
             glm::vec3(
-                tinyobj::real_t(attrib.vertices[i*3]),
-                tinyobj::real_t(attrib.vertices[i*3+1]),
-                tinyobj::real_t(attrib.vertices[i*3+2])
+                tinyobj::real_t(attrib.vertices[i * 3]),
+                tinyobj::real_t(attrib.vertices[i * 3 + 1]),
+                tinyobj::real_t(attrib.vertices[i * 3 + 2])
             ),
 
             // NORMAL
             glm::vec3(
-                tinyobj::real_t(attrib.normals[i*3+0]),  // nx
-                tinyobj::real_t(attrib.normals[i*3+1]),  // ny
-                tinyobj::real_t(attrib.normals[i*3+2])   // nz
+                tinyobj::real_t(attrib.normals[i * 3 + 0]), // nx
+                tinyobj::real_t(attrib.normals[i * 3 + 1]), // ny
+                tinyobj::real_t(attrib.normals[i * 3 + 2])  // nz
             ),
 
             // TEXTURE_COORDINATES
             glm::vec2(
-                tinyobj::real_t(attrib.texcoords[i*2+0]),  //tx
-                tinyobj::real_t(attrib.texcoords[i*2+1])   //ty
+                tinyobj::real_t(attrib.texcoords[i * 2 + 0]), // tx
+                tinyobj::real_t(attrib.texcoords[i * 2 + 1])  // ty
             )
         );
         vertices.push_back(newVertex);
@@ -135,12 +135,13 @@ int main()
 
     // Extract the indices
     std::vector<unsigned int> indices;
-    for (const auto& shape : shapes) {
-        for (const auto& index : shape.mesh.indices) {
+    for (const auto& shape : shapes)
+    {
+        for (const auto& index : shape.mesh.indices)
+        {
             indices.push_back(index.vertex_index);
         }
     }
-
 
     // Create a VBO for the model
     GLuint vbo = 0;
@@ -162,17 +163,17 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    const GLuint VERTEX_ATTR_POSITION = 0;
-    const GLuint VERTEX_ATTR_NORMAL = 1;
+    const GLuint VERTEX_ATTR_POSITION  = 0;
+    const GLuint VERTEX_ATTR_NORMAL    = 1;
     const GLuint VERTEX_ATTR_TEXCOORDS = 2;
 
     glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
     glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
     glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORDS);
 
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, position));
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid *)offsetof(glimac::ShapeVertex, texCoords));
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, position));
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, texCoords));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -181,7 +182,6 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
@@ -226,7 +226,6 @@ int main()
 
     /* Loop until the user closes the window */
     ctx.update = [&]() {
-
         createGuiFromParams(&small_boid_params, "Small Boids");
         createMainGui(&environment_params);
 
@@ -283,12 +282,10 @@ int main()
             MVMatrix_penguin     = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
 
-            //penguin
+            // penguin
             drawPenguin(i, penguin, indices, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
 
             i++;
-
-
         }
 
         glBindVertexArray(0);

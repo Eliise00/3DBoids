@@ -1,3 +1,6 @@
+#ifndef _BOID_3D_HPP
+#define _BOID_3D_HPP
+
 #include <cstdlib>
 #include <iostream>
 #include <random>
@@ -30,12 +33,9 @@ private:
 public:
     explicit Boid3D(glm::vec3 initial_position)
         : _pos(initial_position), //
-        _speed(glm::vec3(p6::random::number(-.001, .001),
-                         p6::random::number(-.001, .001),
-                         p6::random::number(-.001, .001)))
+        _speed(glm::vec3(p6::random::number(-.001, .001), p6::random::number(-.001, .001), p6::random::number(-.001, .001)))
     {
     }
-
 
     void adaptSpeedToBorders(Environment_params environment, Boid_behavior_params params)
     {
@@ -63,7 +63,7 @@ public:
     {
         glm::vec3 avoid_vec = glm::vec3(0, 0, 0);
         glm::vec3 align_vec = glm::vec3(0, 0, 0);
-        int friends = 0;
+        int       friends   = 0;
         for (auto& other : boids)
         {
             if (_pos != other._pos) // if not itself
@@ -90,8 +90,8 @@ public:
 
     void clampSpeed(Boid_behavior_params params)
     {
-        float max_speed = params.max_speed / 10000;
-        float min_speed = params.min_speed / 10000;
+        float max_speed    = params.max_speed / 10000;
+        float min_speed    = params.min_speed / 10000;
         float actual_speed = glm::length(_speed);
         if (actual_speed > max_speed)
         {
@@ -108,7 +108,10 @@ public:
         _pos += _speed * environment.speed_multiplier;
     }
 
-    glm::vec3 getPosition() {
+    glm::vec3 getPosition()
+    {
         return _pos;
     }
 };
+
+#endif

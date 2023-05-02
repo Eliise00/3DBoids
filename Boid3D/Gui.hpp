@@ -1,5 +1,5 @@
-#ifndef OPENGL_TPS_TEMPLATE_GUI_HPP
-#define OPENGL_TPS_TEMPLATE_GUI_HPP
+#ifndef _GUI_HPP
+#define _GUI_HPP
 
 #include "Boid3D.hpp"
 #include "imgui.h"
@@ -27,4 +27,4 @@ void createMainGui(Environment_params* params)
     ImGui::Checkbox("Show align circles", &params->show_align_circle);
     ImGui::End();
 }
-#endif // OPENGL_TPS_TEMPLATE_GUI_HPP
+#endif // _GUI_HPP

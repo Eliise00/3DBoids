@@ -1,3 +1,6 @@
+#ifndef _PROGRAM_HPP
+#define _PROGRAM_HPP
+
 #include <cstdlib>
 #include <iostream>
 #include <random>
@@ -34,3 +37,5 @@ struct PenguinProgram {
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
     }
 };
+
+#endif
