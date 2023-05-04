@@ -1,8 +1,6 @@
-#include <glm/glm.hpp>
 #include <vector>
 #include "Boid3D.hpp"
 #include "Gui.hpp"
-#include "Model.hpp"
 #include "Program.hpp"
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/common.hpp"
@@ -58,7 +56,7 @@ int main()
         .show_avoid_circle = true,
         .z_limit           = 1.};
 
-    const int NbBoid = 50;
+    const int NbBoid = 10;
 
     // BEGINNING OF MY INIT CODE//
 
@@ -81,14 +79,11 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+    // TEXTURE
+    //////////////////////////////
 
     /////// end of the texture loading -> put it in a texture class ???
 
-    char const* model_filename = "assets/models/penguin.obj";
-    Model       myModel(model_filename);
-    myModel.initModel();
-
-    /*
     /////// TinyObj library : use only #include "tiny_obj_loader.h"
     tinyobj::attrib_t                attrib;
     std::vector<tinyobj::shape_t>    shapes;
@@ -190,8 +185,6 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    */
-
     // Depth option
     //////// don't know what this do exactly but it is very important for transparency and depth
     glEnable(GL_DEPTH_TEST);
@@ -276,9 +269,7 @@ int main()
 
         // BEGIN OF MY DRAW CODE//
 
-        // needs Model.hpp
-        // glBindVertexArray(vao);
-        glBindVertexArray(myModel.getVao());
+        glBindVertexArray(vao);
 
         /////// boid deplacement here
         for (auto& boid : boids)
@@ -303,9 +294,7 @@ int main()
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
 
             // penguin
-            // needs Model.hpp
-            // drawPenguin(i, penguin, indices, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
-            drawPenguin(i, penguin, myModel.getIndices(), ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
+            drawPenguin(i, penguin, indices, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
 
             i++;
         }
@@ -361,10 +350,8 @@ int main()
     ctx.start();
 
     // Clear vbo & vao
-    // needs Model.hpp
-    // glDeleteBuffers(1, &vbo);
-    // glDeleteVertexArrays(1, &vao);
-    myModel.clearModel();
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
 
     return 0;
 }
