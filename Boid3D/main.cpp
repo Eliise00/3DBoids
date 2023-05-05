@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <vector>
 #include "Boid3D.hpp"
 #include "Gui.hpp"
@@ -14,6 +15,21 @@ int const window_width  = 1920;
 int const window_height = 1080;
 
 ////////// F
+
+void loadTexture(const std::filesystem::path& filePath, GLuint& textureID)
+{
+    const auto textureCube = p6::load_image_buffer(filePath);
+
+    glGenTextures(1, &textureID);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureCube.width(), textureCube.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureCube.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
@@ -56,7 +72,7 @@ int main()
         .show_avoid_circle = true,
         .z_limit           = 1.};
 
-    const int NbBoid = 10;
+    const int NbBoid = 30;
 
     // BEGINNING OF MY INIT CODE//
 
@@ -66,21 +82,21 @@ int main()
     // BEGINNING OF MY INIT CODE//
 
     //////Texture - loading of the texture -> must be done at the begining of the code
+    GLuint textureID = 0;
+    loadTexture("assets/models/texture_penguin.jpg", textureID);
 
-    GLuint     textureID   = 0;
-    const auto textureCube = p6::load_image_buffer("assets/models/texture_penguin.jpg");
+    // GLuint     textureID   = 0;
+    // const auto textureCube = p6::load_image_buffer("assets/models/texture_penguin.jpg");
 
-    glGenTextures(1, &textureID);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    // glGenTextures(1, &textureID);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureCube.width(), textureCube.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureCube.data());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureCube.width(), textureCube.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureCube.data());
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    // TEXTURE
-    //////////////////////////////
+    // glBindTexture(GL_TEXTURE_2D, 0);
 
     /////// end of the texture loading -> put it in a texture class ???
 
