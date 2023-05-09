@@ -3,6 +3,7 @@
 #include "Boid3D.hpp"
 #include "Gui.hpp"
 #include "Program.hpp"
+#include "Texture.hpp"
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/common.hpp"
 #include "glm/ext/scalar_constants.hpp"
@@ -13,35 +14,6 @@
 
 int const window_width  = 1920;
 int const window_height = 1080;
-
-// TODO : put in a bTexture header file maybe
-// called bTexture because I'm too scared things will break if there is already a class named Texture somewhere...
-class bTexture {
-private:
-    GLuint _textureID;
-
-public:
-    explicit bTexture(const std::filesystem::path& filePath, GLuint textureID)
-        : _textureID(textureID)
-    {
-        const auto textureCube = p6::load_image_buffer(filePath);
-
-        glGenTextures(1, &_textureID);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, _textureID);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureCube.width(), textureCube.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureCube.data());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    GLuint getTextureID() const
-    {
-        return _textureID;
-    }
-};
 
 void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
@@ -94,7 +66,8 @@ int main()
     // BEGINNING OF MY INIT CODE//
 
     //////Texture - loading of the texture -> must be done at the begining of the code
-    bTexture penguinTexture("assets/models/texture_penguin.jpg", 0);
+    // Needs Texture.hpp
+    Texture penguinTexture("assets/models/texture_penguin.jpg", 0);
 
     /////// TinyObj library : use only #include "tiny_obj_loader.h"
     tinyobj::attrib_t                attrib;
