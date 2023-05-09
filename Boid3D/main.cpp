@@ -255,7 +255,7 @@ int main()
         {
             ViewMatrix.moveFront(0.1);
         }
-        if (Q)
+        if (D)
         {
             ViewMatrix.moveLeft(0.1);
         }
@@ -263,7 +263,7 @@ int main()
         {
             ViewMatrix.moveFront(-0.1);
         }
-        if (D)
+        if (Q)
         {
             ViewMatrix.moveLeft(-0.1);
         }
