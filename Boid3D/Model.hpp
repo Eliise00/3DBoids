@@ -10,110 +10,84 @@
 
 class Model {
 private:
-    char const*               _filename; // will be "assets/models/penguin.obj"
-    std::vector<unsigned int> _indices;
-    GLuint                    _vbo;
-    GLuint                    _vao;
-    GLuint                    _ibo;
+    tinyobj::attrib_t                _attrib;
+    std::vector<tinyobj::shape_t>    _shapes;
+    std::vector<tinyobj::material_t> _materials;
+    std::vector<glimac::ShapeVertex> _vertices;
+    std::vector<unsigned int>        _indices;
+    GLuint                           _vbo;
+    GLuint                           _ibo;
+    GLuint                           _vao;
 
 public:
-    explicit Model(char const* filename)
-        : _filename(filename), _vbo(0), _vao(0), _ibo(0){};
-
-    GLuint getVbo() const
+    Model(char const* filename)
+        : _vbo(0), _ibo(0), _vao(0)
     {
-        return _vbo;
-    }
+        std::string warn;
+        std::string err;
 
-    GLuint getVao() const
-    {
-        return _vao;
-    }
+        bool ret = tinyobj::LoadObj(&_attrib, &_shapes, nullptr, &warn, &err, filename);
 
-    GLuint getIbo() const
-    {
-        return _ibo;
-    }
-
-    std::vector<unsigned int>& getIndices()
-    {
-        return _indices;
-    }
-
-    void clearModel()
-    {
-        glDeleteBuffers(1, &_vbo);
-        glDeleteVertexArrays(1, &_vao);
-    }
-
-    void initModel()
-    {
-        tinyobj::attrib_t                model_attrib;
-        std::vector<tinyobj::shape_t>    model_shapes;
-        std::vector<tinyobj::material_t> model_materials;
-
-        std::string model_warn, model_err;
-
-        bool ret = tinyobj::LoadObj(&model_attrib, &model_shapes, nullptr, &model_warn, &model_err, _filename);
-
-        if (!model_warn.empty())
+        if (!warn.empty())
         {
-            std::cout << "Warning: " << model_warn << std::endl;
+            std::cout << "Warning: " << warn << std::endl;
         }
-        if (!model_err.empty())
+        if (!err.empty())
         {
-            std::cerr << "Error: " << model_err << std::endl;
+            std::cerr << "Error: " << err << std::endl;
         }
         if (!ret)
         {
             exit(1);
         }
+    };
 
-        std::vector<glimac::ShapeVertex> model_vertices;
-        // TODO : récupérer le nombre de vertices
-        // pas qu'il soit en dur (3561)
-
-        for (int i = 0; i < 3561; i++)
+    void setVertices()
+    {
+        for (int i = 0; i < static_cast<int>(_attrib.GetVertices().size() / 3); i++)
         {
-            glimac::ShapeVertex model_newVertex = glimac::ShapeVertex(
+            glimac::ShapeVertex newVertex = glimac::ShapeVertex(
 
                 // POSITION
                 glm::vec3(
-                    tinyobj::real_t(model_attrib.vertices[i * 3]),
-                    tinyobj::real_t(model_attrib.vertices[i * 3 + 1]),
-                    tinyobj::real_t(model_attrib.vertices[i * 3 + 2])
+                    tinyobj::real_t(_attrib.vertices[i * 3]),
+                    tinyobj::real_t(_attrib.vertices[i * 3 + 1]),
+                    tinyobj::real_t(_attrib.vertices[i * 3 + 2])
                 ),
 
                 // NORMAL
                 glm::vec3(
-                    tinyobj::real_t(model_attrib.normals[i * 3 + 0]), // nx
-                    tinyobj::real_t(model_attrib.normals[i * 3 + 1]), // ny
-                    tinyobj::real_t(model_attrib.normals[i * 3 + 2])  // nz
+                    tinyobj::real_t(_attrib.normals[i * 3 + 0]), // nx
+                    tinyobj::real_t(_attrib.normals[i * 3 + 1]), // ny
+                    tinyobj::real_t(_attrib.normals[i * 3 + 2])  // nz
                 ),
 
                 // TEXTURE_COORDINATES
                 glm::vec2(
-                    tinyobj::real_t(model_attrib.texcoords[i * 2 + 0]), // tx
-                    tinyobj::real_t(model_attrib.texcoords[i * 2 + 1])  // ty
+                    tinyobj::real_t(_attrib.texcoords[i * 2 + 0]), // tx
+                    tinyobj::real_t(_attrib.texcoords[i * 2 + 1])  // ty
                 )
             );
-            model_vertices.push_back(model_newVertex);
+            _vertices.push_back(newVertex);
         }
+    }
 
-        std::vector<unsigned int> _indices;
-        for (const auto& shape : model_shapes)
+    void setIndices()
+    {
+        for (const auto& shape : _shapes)
         {
             for (const auto& index : shape.mesh.indices)
             {
                 _indices.push_back(index.vertex_index);
             }
         }
+    }
 
-        /////// GL code
-        // Create a VBO for the model
+    void glCode()
+    {
         glGenBuffers(1, &_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, model_vertices.size() * sizeof(glimac::ShapeVertex), model_vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(glimac::ShapeVertex), _vertices.data(), GL_STATIC_DRAW);
 
         // Create an IBO for the model
         glGenBuffers(1, &_ibo);
@@ -142,10 +116,27 @@ public:
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+    }
 
-        std::cout << "Model Initialised" << std::endl;
-        std::cout << "size of model_vertices: " << model_vertices.size() << std::endl;
-        std::cout << "size of indices: " << _indices.size() << std::endl;
+    void bindVertexArray() const
+    {
+        glBindVertexArray(_vao);
+    }
+
+    void debindVertexArray() const
+    {
+        glBindVertexArray(0);
+    }
+
+    void clearBuffers() const
+    {
+        glDeleteBuffers(1, &_vbo);
+        glDeleteVertexArrays(1, &_vao);
+    }
+
+    std::vector<unsigned int> getIndices()
+    {
+        return _indices;
     }
 };
 

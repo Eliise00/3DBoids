@@ -2,6 +2,7 @@
 #include <vector>
 #include "Boid3D.hpp"
 #include "Gui.hpp"
+#include "Model.hpp"
 #include "Program.hpp"
 #include "Texture.hpp"
 #include "glimac/FreeflyCamera.hpp"
@@ -69,106 +70,13 @@ int main()
     // Needs Texture.hpp
     Texture penguinTexture("assets/models/texture_penguin.jpg", 0);
 
-    /////// TinyObj library : use only #include "tiny_obj_loader.h"
-    tinyobj::attrib_t                attrib;
-    std::vector<tinyobj::shape_t>    shapes;
-    std::vector<tinyobj::material_t> materials;
+    Model penguinModel("assets/models/penguin.obj");
 
-    std::string warn, err;
+    penguinModel.setVertices();
 
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, nullptr, &warn, &err, "assets/models/penguin.obj");
+    penguinModel.setIndices();
 
-    if (!warn.empty())
-    {
-        std::cout << "Warning: " << warn << std::endl;
-    }
-    if (!err.empty())
-    {
-        std::cerr << "Error: " << err << std::endl;
-    }
-    if (!ret)
-    {
-        exit(1);
-    }
-
-    /////// vertices is a vector if glimac (cf. #include "glimac/common.hpp") ->take verices/normals/texCoords
-    std::vector<glimac::ShapeVertex> vertices;
-    ////// 3561 IS THE NUMBER OF VERTICES //////
-    ////// TOD0 : THIS NUMBER COULD BE A VARIABLE -> ctrl + F "v " in .obj file give you the amount of vertices
-    for (int i = 0; i < 3561; i++)
-    {
-        glimac::ShapeVertex newVertex = glimac::ShapeVertex(
-
-            // POSITION
-            glm::vec3(
-                tinyobj::real_t(attrib.vertices[i * 3]),
-                tinyobj::real_t(attrib.vertices[i * 3 + 1]),
-                tinyobj::real_t(attrib.vertices[i * 3 + 2])
-            ),
-
-            // NORMAL
-            glm::vec3(
-                tinyobj::real_t(attrib.normals[i * 3 + 0]), // nx
-                tinyobj::real_t(attrib.normals[i * 3 + 1]), // ny
-                tinyobj::real_t(attrib.normals[i * 3 + 2])  // nz
-            ),
-
-            // TEXTURE_COORDINATES
-            glm::vec2(
-                tinyobj::real_t(attrib.texcoords[i * 2 + 0]), // tx
-                tinyobj::real_t(attrib.texcoords[i * 2 + 1])  // ty
-            )
-        );
-        vertices.push_back(newVertex);
-    }
-
-    /////// loop extracting the indices of vertex for the ibo
-    // Extract the indices
-    std::vector<unsigned int> indices;
-    for (const auto& shape : shapes)
-    {
-        for (const auto& index : shape.mesh.indices)
-        {
-            indices.push_back(index.vertex_index);
-        }
-    }
-
-    /////// GL code
-    // Create a VBO for the model
-    GLuint vbo = 0;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glimac::ShapeVertex), vertices.data(), GL_STATIC_DRAW);
-
-    // Create an IBO for the model
-    GLuint ibo = 0;
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // Create a VAO for the model
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    ////// the order is important
-    const GLuint VERTEX_ATTR_POSITION  = 0;
-    const GLuint VERTEX_ATTR_NORMAL    = 1;
-    const GLuint VERTEX_ATTR_TEXCOORDS = 2;
-
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORDS);
-
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, position));
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXCOORDS, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex), (const GLvoid*)offsetof(glimac::ShapeVertex, texCoords));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    penguinModel.glCode();
 
     // Depth option
     //////// don't know what this do exactly but it is very important for transparency and depth
@@ -254,7 +162,7 @@ int main()
 
         // BEGIN OF MY DRAW CODE//
 
-        glBindVertexArray(vao);
+        penguinModel.bindVertexArray();
 
         /////// boid deplacement here
         for (auto& boid : boids)
@@ -279,12 +187,11 @@ int main()
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
 
             // penguin
-            drawPenguin(i, penguin, indices, ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
-
+            drawPenguin(i, penguin, penguinModel.getIndices(), ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
             i++;
         }
 
-        glBindVertexArray(0);
+        penguinModel.debindVertexArray();
 
         // END OF MY DRAW CODE//
     };
@@ -335,8 +242,7 @@ int main()
     ctx.start();
 
     // Clear vbo & vao
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
+    penguinModel.clearBuffers();
 
     return 0;
 }
