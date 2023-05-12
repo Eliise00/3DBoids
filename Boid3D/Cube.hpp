@@ -38,13 +38,13 @@ void drawCube(float size_x, float size_y, float size_z) {
         1, 0, 4
     };
 
-    // Set up the vertex buffer object (VBO)
+    // Set up the VBO
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Set up the vertex array object (VAO)
+    // Set up the VAO
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -53,10 +53,10 @@ void drawCube(float size_x, float size_y, float size_z) {
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // Set up the element buffer object (EBO)
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // Set up the IBO
+    unsigned int IBO;
+    glGenBuffers(1, &IBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Draw the cube
@@ -65,7 +65,7 @@ void drawCube(float size_x, float size_y, float size_z) {
     // Clean up
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &EBO);
+    glDeleteBuffers(1, &IBO);
 }
 
 #endif

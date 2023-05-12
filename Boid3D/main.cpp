@@ -69,8 +69,10 @@ int main()
     // BEGINNING OF MY INIT CODE//
 
     //////Texture - loading of the texture -> must be done at the begining of the code
-    // Needs Texture.hpp
-    Texture penguinTexture("assets/models/texture_penguin.jpg", 0);
+
+    Texture cubeTexture("assets/models/texture_ice.jpg", 0);
+
+    Texture penguinTexture("assets/models/texture_penguin.jpg", 1);
 
     Model penguinModel("assets/models/penguin.obj");
 
@@ -158,12 +160,13 @@ int main()
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // boids
-        penguin.m_Program.use();
-
-
         // Use the cube program and set the uniforms
         cube.m_Program.use();
+
+        ///////// bind the texture of the cube
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, cubeTexture.getTextureID());
+        glUniform1i(cube.uTexture, 0);
 
         MVMatrix_cube = ViewMatrix.getViewMatrix();
         glm::mat4 NormalMatrix_cube = glm::transpose(glm::inverse(MVMatrix_cube));
@@ -172,18 +175,26 @@ int main()
         glUniformMatrix4fv(cube.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix_cube));
         glUniformMatrix4fv(cube.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix_cube));
 
-        glUniform3fv(cube.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
+        glUniform3fv(cube.uKa, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+        glUniform3fv(cube.uKd, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
+        glUniform3fv(cube.uKs, 1, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
+        glUniform1f(cube.uShininess, 0.6);
+
+        glUniform3fv(cube.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-3, -3, -3)));
         glUniform3fv(cube.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
         //Cube
-        drawCube(environment_params.aspect_ratio, 1., environment_params.z_limit);
+        drawCube(environment_params.aspect_ratio, environment_params.aspect_ratio, environment_params.z_limit);
 
+
+        // boids
+        penguin.m_Program.use();
 
 
         ///////// bind the texture of the boids
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, penguinTexture.getTextureID());
-        glUniform1i(penguin.uTexture, 0);
+        glUniform1i(penguin.uTexture, 1);
 
         // BEGIN OF MY DRAW CODE//
 
