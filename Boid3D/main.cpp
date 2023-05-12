@@ -5,6 +5,7 @@
 #include "Model.hpp"
 #include "Program.hpp"
 #include "Texture.hpp"
+#include "Cube.hpp"
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/common.hpp"
 #include "glm/ext/scalar_constants.hpp"
@@ -63,6 +64,7 @@ int main()
 
     // create the programs
     PenguinProgram penguin{};
+    CubeProgram cube{};
 
     // BEGINNING OF MY INIT CODE//
 
@@ -87,6 +89,10 @@ int main()
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
     glm::mat4     ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
+
+    //For the cube
+    glm::mat4 MVMatrix_cube;
+    glm::mat4 NormalMatrix_cube;
 
     // For the boids
     glm::mat4 MVMatrix_penguin;
@@ -155,6 +161,25 @@ int main()
         // boids
         penguin.m_Program.use();
 
+
+        // Use the cube program and set the uniforms
+        cube.m_Program.use();
+
+        MVMatrix_cube = ViewMatrix.getViewMatrix();
+        glm::mat4 NormalMatrix_cube = glm::transpose(glm::inverse(MVMatrix_cube));
+
+        glUniformMatrix4fv(cube.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix_cube));
+        glUniformMatrix4fv(cube.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix_cube));
+        glUniformMatrix4fv(cube.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix_cube));
+
+        glUniform3fv(cube.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
+        glUniform3fv(cube.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
+
+        //Cube
+        drawCube(environment_params.aspect_ratio, 1., environment_params.z_limit);
+
+
+
         ///////// bind the texture of the boids
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, penguinTexture.getTextureID());
@@ -165,9 +190,9 @@ int main()
         penguinModel.bindVertexArray();
 
         /////// boid deplacement here
+        int i = 0;
         for (auto& boid : boids)
         {
-            int i = 0;
 
             // Update boid positions and velocities based on behavior rules
             boid.adaptSpeedToBorders(environment_params, small_boid_params);
@@ -189,9 +214,12 @@ int main()
             // penguin
             drawPenguin(i, penguin, penguinModel.getIndices(), ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
             i++;
+
         }
 
         penguinModel.debindVertexArray();
+
+
 
         // END OF MY DRAW CODE//
     };
