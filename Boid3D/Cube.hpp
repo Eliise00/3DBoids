@@ -12,14 +12,14 @@
 void drawCube(float size_x, float size_y, float size_z) {
     // Define vertices of a cube
     float vertices[] = {
-        -size_x, -size_y, size_z, 0.5f,
-        size_x, -size_y,  size_z, 0.5f,
-        size_x, size_y,  size_z, 0.5f,
-        -size_x, size_y,  size_z, 0.5f,
-        -size_x, -size_y, - size_z, 0.5f,
-        size_x, -size_y, - size_z, 0.5f,
-        size_x, size_y, - size_z, 0.5f,
-        -size_x, size_y, - size_z, 0.5f,
+        -size_x, -size_y, size_z, 0.1f, // vertex 0
+        size_x, -size_y,  size_z, 0.1f, // vertex 1
+        size_x, size_y,  size_z, 0.1f, // vertex 2
+        -size_x, size_y,  size_z, 0.1f, // vertex 3
+        -size_x, -size_y, - size_z, 0.1f, // vertex 4
+        size_x, -size_y, - size_z, 0.1f, // vertex 5
+        size_x, size_y, - size_z, 0.1f, // vertex 6
+        -size_x, size_y, - size_z, 0.1f, // vertex 7
     };
 
     // Define indices of the vertices that form each face of the cube

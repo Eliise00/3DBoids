@@ -44,29 +44,18 @@ struct CubeProgram {
     GLint uMVPMatrix;
     GLint uMVMatrix;
     GLint uNormalMatrix;
-    GLint uTexture;
-    GLint uKa;
-    GLint uKd;
-    GLint uKs;
-    GLint uShininess;
-    GLint uLightPos_vs;
-    GLint uLightIntensity;
+    GLint uTextureCube;
+
 
     CubeProgram()
-        : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/directionalLight.fs.glsl"))
+        : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/cube.fs.glsl"))
     {
         uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
         uMVMatrix     = glGetUniformLocation(m_Program.id(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.id(), "uNormalMatrix");
 
-        uTexture = glGetUniformLocation(m_Program.id(), "uTexture");
+        uTextureCube = glGetUniformLocation(m_Program.id(), "uTextureCube");
 
-        uKa             = glGetUniformLocation(m_Program.id(), "uKa");
-        uKd             = glGetUniformLocation(m_Program.id(), "uKd");
-        uKs             = glGetUniformLocation(m_Program.id(), "uKs");
-        uShininess      = glGetUniformLocation(m_Program.id(), "uShininess");
-        uLightPos_vs    = glGetUniformLocation(m_Program.id(), "uLightPos_vs");
-        uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
     }
 };
 

@@ -34,6 +34,8 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsign
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+
+
 int main()
 {
     auto ctx = p6::Context{{window_width, window_height, "Boid3D"}};
@@ -87,6 +89,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
@@ -166,7 +169,7 @@ int main()
         ///////// bind the texture of the cube
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture.getTextureID());
-        glUniform1i(cube.uTexture, 0);
+        glUniform1i(cube.uTextureCube, 0);
 
         MVMatrix_cube = ViewMatrix.getViewMatrix();
         glm::mat4 NormalMatrix_cube = glm::transpose(glm::inverse(MVMatrix_cube));
@@ -175,16 +178,8 @@ int main()
         glUniformMatrix4fv(cube.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix_cube));
         glUniformMatrix4fv(cube.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix_cube));
 
-        glUniform3fv(cube.uKa, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-        glUniform3fv(cube.uKd, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
-        glUniform3fv(cube.uKs, 1, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
-        glUniform1f(cube.uShininess, 0.6);
-
-        glUniform3fv(cube.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-3, -3, -3)));
-        glUniform3fv(cube.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
-
         //Cube
-        drawCube(environment_params.aspect_ratio, environment_params.aspect_ratio, environment_params.z_limit);
+        drawCube(1.5 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2. );
 
 
         // boids
