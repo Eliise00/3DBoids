@@ -1,11 +1,11 @@
 #include <filesystem>
 #include <vector>
 #include "Boid3D.hpp"
+#include "Cube.hpp"
 #include "Gui.hpp"
 #include "Model.hpp"
 #include "Program.hpp"
 #include "Texture.hpp"
-#include "Cube.hpp"
 #include "glimac/FreeflyCamera.hpp"
 #include "glimac/common.hpp"
 #include "glm/ext/scalar_constants.hpp"
@@ -13,6 +13,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
 #include "tiny_obj_loader.h"
+
 
 int const window_width  = 1920;
 int const window_height = 1080;
@@ -33,8 +34,6 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsign
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
-
-
 
 int main()
 {
@@ -66,7 +65,8 @@ int main()
 
     // create the programs
     PenguinProgram penguin{};
-    CubeProgram cube{};
+    CubeProgram    cube{};
+    bool           showCube = true;
 
     // BEGINNING OF MY INIT CODE//
 
@@ -90,12 +90,11 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
     // MVP
     FreeflyCamera ViewMatrix = FreeflyCamera();
     glm::mat4     ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
 
-    //For the cube
+    // For the cube
     glm::mat4 MVMatrix_cube;
     glm::mat4 NormalMatrix_cube;
 
@@ -142,6 +141,9 @@ int main()
     ctx.update = [&]() {
         createGuiFromParams(&small_boid_params, "Small Boids");
         createMainGui(&environment_params);
+        ImGui::Begin("The Cube");
+        ImGui::Checkbox("Display", &showCube);
+        ImGui::End();
 
         if (Z)
         {
@@ -171,20 +173,19 @@ int main()
         glBindTexture(GL_TEXTURE_2D, cubeTexture.getTextureID());
         glUniform1i(cube.uTextureCube, 0);
 
-        MVMatrix_cube = ViewMatrix.getViewMatrix();
+        MVMatrix_cube               = ViewMatrix.getViewMatrix();
         glm::mat4 NormalMatrix_cube = glm::transpose(glm::inverse(MVMatrix_cube));
 
         glUniformMatrix4fv(cube.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix_cube));
         glUniformMatrix4fv(cube.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix_cube));
         glUniformMatrix4fv(cube.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix_cube));
 
-        //Cube
-        drawCube(1.5 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2. );
-
+        // Cube
+        if (showCube)
+            drawCube(1.5 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2.);
 
         // boids
         penguin.m_Program.use();
-
 
         ///////// bind the texture of the boids
         glActiveTexture(GL_TEXTURE1);
@@ -199,7 +200,6 @@ int main()
         int i = 0;
         for (auto& boid : boids)
         {
-
             // Update boid positions and velocities based on behavior rules
             boid.adaptSpeedToBorders(environment_params, small_boid_params);
             boid.adaptSpeedToBoids(boids, environment_params, small_boid_params);
@@ -220,12 +220,9 @@ int main()
             // penguin
             drawPenguin(i, penguin, penguinModel.getIndices(), ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
             i++;
-
         }
 
         penguinModel.debindVertexArray();
-
-
 
         // END OF MY DRAW CODE//
     };
