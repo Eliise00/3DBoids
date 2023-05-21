@@ -35,6 +35,24 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsign
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void drawIceField(const IceFieldProgram& iceFieldProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
+{
+    // Set uniform variables
+    glUniformMatrix4fv(iceFieldProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+    glUniformMatrix4fv(iceFieldProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+    glUniformMatrix4fv(iceFieldProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+
+    glUniform3fv(iceFieldProgram.uKa, 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 1.0f)));
+    glUniform3fv(iceFieldProgram.uKd, 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 1.0f)));
+    glUniform3fv(iceFieldProgram.uKs, 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 1.0f)));
+
+    glUniform3fv(iceFieldProgram.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
+    glUniform3fv(iceFieldProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
+
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+
 int main()
 {
     auto ctx = p6::Context{{window_width, window_height, "Boid3D"}};
@@ -66,6 +84,7 @@ int main()
     // create the programs
     PenguinProgram penguin{};
     CubeProgram    cube{};
+    IceFieldProgram iceField{};
     bool           showCube = true;
 
     // BEGINNING OF MY INIT CODE//
@@ -84,6 +103,17 @@ int main()
 
     penguinModel.glCode();
 
+
+    Texture IceFieldTexture("assets/models/texture_ice.jpg", 2);
+
+    Model iceFieldModel("assets/models/iceField.obj");
+
+    iceFieldModel.setVertices();
+
+    iceFieldModel.setIndices();
+
+    iceFieldModel.glCode();
+
     // Depth option
     //////// don't know what this do exactly but it is very important for transparency and depth
     glEnable(GL_DEPTH_TEST);
@@ -101,6 +131,10 @@ int main()
     // For the boids
     glm::mat4 MVMatrix_penguin;
     glm::mat4 NormalMatrix_penguin;
+
+    // For the Ice Field
+    glm::mat4 MVMatrix_ice;
+    glm::mat4 NormalMatrix_ice;
 
     // light parameter
     std::vector<glm::vec3> Ka;
@@ -183,6 +217,23 @@ int main()
         // Cube
         if (showCube)
             drawCube(1.5 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2.);
+
+        //Ice Field
+        iceField.m_Program.use();
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, IceFieldTexture.getTextureID());
+        glUniform1i(iceField.uTexture, 2);
+
+
+        iceFieldModel.bindVertexArray();
+        MVMatrix_ice               = ViewMatrix.getViewMatrix();
+        MVMatrix_ice     = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
+        MVMatrix_ice = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 2.0f));
+        glm::mat4 NormalMatrix_ice = glm::transpose(glm::inverse(MVMatrix_cube));
+        drawIceField(iceField, iceFieldModel.getIndices(), ViewMatrix, ProjMatrix, MVMatrix_ice, NormalMatrix_ice, Ka, Kd, Ks, Shininess);
+
+        iceFieldModel.debindVertexArray();
 
         // boids
         penguin.m_Program.use();
@@ -274,6 +325,7 @@ int main()
 
     // Clear vbo & vao
     penguinModel.clearBuffers();
+    iceFieldModel.clearBuffers();
 
     return 0;
 }
