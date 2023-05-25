@@ -7,18 +7,19 @@
 #include "Program.hpp"
 #include "Texture.hpp"
 #include "glimac/FreeflyCamera.hpp"
+#include "glimac/ThirdPersonCamera.hpp"
 #include "glimac/common.hpp"
 #include "glm/ext/scalar_constants.hpp"
+#include "glm/fwd.hpp"
 #include "glm/gtc/random.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "img/src/Image.h"
 #include "tiny_obj_loader.h"
 
-
 int const window_width  = 1920;
 int const window_height = 1080;
 
-void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
+void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsigned int> indices, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
     // Set uniform variables
     glUniformMatrix4fv(penguinProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
@@ -35,7 +36,7 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsign
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void drawIceField(const IceFieldProgram& iceFieldProgram, std::vector<unsigned int> indices, FreeflyCamera ViewMatrix, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
+void drawIceField(const IceFieldProgram& iceFieldProgram, std::vector<unsigned int> indices, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
     // Set uniform variables
     glUniformMatrix4fv(iceFieldProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
@@ -51,7 +52,6 @@ void drawIceField(const IceFieldProgram& iceFieldProgram, std::vector<unsigned i
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
-
 
 int main()
 {
@@ -82,10 +82,10 @@ int main()
     // BEGINNING OF MY INIT CODE//
 
     // create the programs
-    PenguinProgram penguin{};
-    CubeProgram    cube{};
+    PenguinProgram  penguin{};
+    CubeProgram     cube{};
     IceFieldProgram iceField{};
-    bool           showCube = true;
+    bool            showCube = true;
 
     // BEGINNING OF MY INIT CODE//
 
@@ -103,7 +103,6 @@ int main()
 
     penguinModel.glCode();
 
-
     Texture IceFieldTexture("assets/models/texture_ice.jpg", 2);
 
     Model iceFieldModel("assets/models/iceField.obj");
@@ -120,9 +119,14 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Surveyor penguin
+    glm::vec3 surveyorPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+
     // MVP
-    FreeflyCamera ViewMatrix = FreeflyCamera();
-    glm::mat4     ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
+    // FreeflyCamera freeViewMatrix = FreeflyCamera(); // OLD VIEW (freefly)
+    auto ViewMatrix = ThirdPersonCamera(surveyorPosition, 1.0f);
+
+    glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
 
     // For the cube
     glm::mat4 MVMatrix_cube;
@@ -181,20 +185,26 @@ int main()
 
         if (Z)
         {
-            ViewMatrix.moveFront(0.1);
+            // ViewMatrix.moveFront(0.1);
+            surveyorPosition.z -= 0.01;
         }
         if (D)
         {
-            ViewMatrix.moveLeft(0.1);
+            // ViewMatrix.moveLeft(0.1);
+            surveyorPosition.x -= 0.01;
         }
         if (S)
         {
-            ViewMatrix.moveFront(-0.1);
+            // ViewMatrix.moveFront(-0.1);
+            surveyorPosition.z += 0.01;
         }
         if (Q)
         {
-            ViewMatrix.moveLeft(-0.1);
+            // ViewMatrix.moveLeft(-0.1);
+            surveyorPosition.x += 0.01;
         }
+
+        ViewMatrix.update(surveyorPosition);
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -218,20 +228,19 @@ int main()
         if (showCube)
             drawCube(1.5 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2.);
 
-        //Ice Field
+        // Ice Field
         iceField.m_Program.use();
 
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, IceFieldTexture.getTextureID());
         glUniform1i(iceField.uTexture, 2);
 
-
         iceFieldModel.bindVertexArray();
         MVMatrix_ice               = ViewMatrix.getViewMatrix();
-        MVMatrix_ice     = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
-        MVMatrix_ice = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 2.0f));
+        MVMatrix_ice               = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
+        MVMatrix_ice               = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 2.0f));
         glm::mat4 NormalMatrix_ice = glm::transpose(glm::inverse(MVMatrix_cube));
-        drawIceField(iceField, iceFieldModel.getIndices(), ViewMatrix, ProjMatrix, MVMatrix_ice, NormalMatrix_ice, Ka, Kd, Ks, Shininess);
+        drawIceField(iceField, iceFieldModel.getIndices(), ProjMatrix, MVMatrix_ice, NormalMatrix_ice, Ka, Kd, Ks, Shininess);
 
         iceFieldModel.debindVertexArray();
 
@@ -246,6 +255,15 @@ int main()
         // BEGIN OF MY DRAW CODE//
 
         penguinModel.bindVertexArray();
+
+        // Surveyor penguin
+        MVMatrix_penguin     = ViewMatrix.getViewMatrix();
+        MVMatrix_penguin     = glm::translate(MVMatrix_penguin, surveyorPosition);
+        MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        MVMatrix_penguin     = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius));
+        NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
+        drawPenguin(999, penguin, penguinModel.getIndices(), ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
 
         /////// boid deplacement here
         int i = 0;
@@ -269,7 +287,7 @@ int main()
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
 
             // penguin
-            drawPenguin(i, penguin, penguinModel.getIndices(), ViewMatrix, ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
+            drawPenguin(i, penguin, penguinModel.getIndices(), ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
             i++;
         }
 
