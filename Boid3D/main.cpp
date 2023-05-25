@@ -36,19 +36,19 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, std::vector<unsign
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void drawIceField(const IceFieldProgram& iceFieldProgram, std::vector<unsigned int> indices, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
+void drawModel(const ModelProgram& modelProgram, std::vector<unsigned int> indices, glm::mat4 ProjMatrix, glm::mat4 MVMatrix, glm::mat4 NormalMatrix, std::vector<glm::vec3> Ka, std::vector<glm::vec3> Kd, std::vector<glm::vec3> Ks, std::vector<float> Shininess)
 {
     // Set uniform variables
-    glUniformMatrix4fv(iceFieldProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-    glUniformMatrix4fv(iceFieldProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-    glUniformMatrix4fv(iceFieldProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+    glUniformMatrix4fv(modelProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+    glUniformMatrix4fv(modelProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+    glUniformMatrix4fv(modelProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
-    glUniform3fv(iceFieldProgram.uKa, 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 1.0f)));
-    glUniform3fv(iceFieldProgram.uKd, 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 1.0f)));
-    glUniform3fv(iceFieldProgram.uKs, 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 1.0f)));
+    glUniform3fv(modelProgram.uKa, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+    glUniform3fv(modelProgram.uKd, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+    glUniform3fv(modelProgram.uKs, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
-    glUniform3fv(iceFieldProgram.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
-    glUniform3fv(iceFieldProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
+    glUniform3fv(modelProgram.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
+    glUniform3fv(modelProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
@@ -84,34 +84,40 @@ int main()
     // create the programs
     PenguinProgram  penguin{};
     CubeProgram     cube{};
-    IceFieldProgram iceField{};
+    ModelProgram iceField{};
+    ModelProgram surveyor{};
     bool            showCube = true;
 
     // BEGINNING OF MY INIT CODE//
 
-    //////Texture - loading of the texture -> must be done at the begining of the code
+    //////loading of the textures & models
 
+    //Boidsbox
     Texture cubeTexture("assets/models/texture_ice.jpg", 0);
 
+    //Penguin
     Texture penguinTexture("assets/models/texture_penguin.jpg", 1);
 
     Model penguinModel("assets/models/penguin.obj");
-
     penguinModel.setVertices();
-
     penguinModel.setIndices();
-
     penguinModel.glCode();
 
+    //Icefield
     Texture IceFieldTexture("assets/models/texture_ice.jpg", 2);
 
     Model iceFieldModel("assets/models/iceField.obj");
-
     iceFieldModel.setVertices();
-
     iceFieldModel.setIndices();
-
     iceFieldModel.glCode();
+
+    //Surveyor
+    Texture SurveyorTexture("assets/models/surveyor_orange.png", 3);
+
+    Model surveyorModel("assets/models/surveyor.obj");
+    surveyorModel.setVertices();
+    surveyorModel.setIndices();
+    surveyorModel.glCode();
 
     // Depth option
     //////// don't know what this do exactly but it is very important for transparency and depth
@@ -119,14 +125,18 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Surveyor penguin
-    glm::vec3 surveyorPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+    // Surveyor
+    //glm::vec3 surveyorPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+    glm::vec3 surveyorPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
     // MVP
     // FreeflyCamera freeViewMatrix = FreeflyCamera(); // OLD VIEW (freefly)
     auto ViewMatrix = ThirdPersonCamera(surveyorPosition, 1.0f);
-
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
+
+    //For the surveyor
+    glm::mat4 MVMatrix_surveyor;
+    glm::mat4 NormalMatrix_surveyor;
 
     // For the cube
     glm::mat4 MVMatrix_cube;
@@ -239,10 +249,28 @@ int main()
         MVMatrix_ice               = ViewMatrix.getViewMatrix();
         MVMatrix_ice               = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
         MVMatrix_ice               = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 2.0f));
-        glm::mat4 NormalMatrix_ice = glm::transpose(glm::inverse(MVMatrix_cube));
-        drawIceField(iceField, iceFieldModel.getIndices(), ProjMatrix, MVMatrix_ice, NormalMatrix_ice, Ka, Kd, Ks, Shininess);
+        glm::mat4 NormalMatrix_ice = glm::transpose(glm::inverse(MVMatrix_ice));
+        drawModel(iceField, iceFieldModel.getIndices(), ProjMatrix, MVMatrix_ice, NormalMatrix_ice, Ka, Kd, Ks, Shininess);
 
         iceFieldModel.debindVertexArray();
+
+        //surveyor
+        surveyor.m_Program.use();
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, SurveyorTexture.getTextureID());
+        glUniform1i(surveyor.uTexture, 3);
+
+        surveyorModel.bindVertexArray();
+        MVMatrix_surveyor           = ViewMatrix.getViewMatrix();
+        MVMatrix_surveyor = glm::translate(glm::mat4(1.0f), surveyorPosition);
+        MVMatrix_surveyor = glm::rotate(MVMatrix_surveyor, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        MVMatrix_surveyor              = glm::scale(MVMatrix_surveyor, glm::vec3(1.0f / 20.0f));
+        glm::mat4 NormalMatrix_surveyor = glm::transpose(glm::inverse(MVMatrix_surveyor));
+        drawModel(surveyor, surveyorModel.getIndices(), ProjMatrix, MVMatrix_surveyor, NormalMatrix_surveyor, Ka, Kd, Ks, Shininess);
+
+        surveyorModel.debindVertexArray();
+
 
         // boids
         penguin.m_Program.use();
@@ -257,6 +285,7 @@ int main()
         penguinModel.bindVertexArray();
 
         // Surveyor penguin
+        /*
         MVMatrix_penguin     = ViewMatrix.getViewMatrix();
         MVMatrix_penguin     = glm::translate(MVMatrix_penguin, surveyorPosition);
         MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -264,6 +293,7 @@ int main()
         MVMatrix_penguin     = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius));
         NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));
         drawPenguin(999, penguin, penguinModel.getIndices(), ProjMatrix, MVMatrix_penguin, NormalMatrix_penguin, Ka, Kd, Ks, Shininess);
+*/
 
         /////// boid deplacement here
         int i = 0;
@@ -344,6 +374,7 @@ int main()
     // Clear vbo & vao
     penguinModel.clearBuffers();
     iceFieldModel.clearBuffers();
+    surveyorModel.clearBuffers();
 
     return 0;
 }

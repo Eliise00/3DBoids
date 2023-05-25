@@ -39,7 +39,7 @@ struct PenguinProgram {
 };
 
 
-struct IceFieldProgram {
+struct ModelProgram {
     p6::Shader m_Program;
 
     GLint uMVPMatrix;
@@ -53,7 +53,7 @@ struct IceFieldProgram {
     GLint uLightPos_vs;
     GLint uLightIntensity;
 
-    IceFieldProgram()
+    ModelProgram()
         : m_Program(p6::load_shader("shaders/3D.vs.glsl", "shaders/directionalLight.fs.glsl"))
     {
         uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
@@ -70,6 +70,7 @@ struct IceFieldProgram {
         uLightIntensity = glGetUniformLocation(m_Program.id(), "uLightIntensity");
     }
 };
+
 
 struct CubeProgram {
     p6::Shader m_Program;

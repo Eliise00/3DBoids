@@ -97,6 +97,12 @@ private:
 
         m_Position.x = m_targetPos.x - offsetX;
         m_Position.z = m_targetPos.x - offsetZ;
+
+        //test Elise
+        //m_Position.x = m_targetPos.x + offsetX;
+        //m_Position.z = m_targetPos.z + offsetZ;
+
+
         m_Position.y = m_targetPos.y + v_distance;
     }
 };
