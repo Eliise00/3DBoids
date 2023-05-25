@@ -106,7 +106,7 @@ int main()
     //Icefield
     Texture IceFieldTexture("assets/models/texture_ice.jpg", 2);
 
-    Model iceFieldModel("assets/models/iceField.obj");
+    Model iceFieldModel("assets/models/Icefield.obj");
     iceFieldModel.setVertices();
     iceFieldModel.setIndices();
     iceFieldModel.glCode();
