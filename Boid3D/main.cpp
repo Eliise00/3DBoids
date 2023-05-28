@@ -82,20 +82,21 @@ int main()
     // BEGINNING OF MY INIT CODE//
 
     // create the programs
-    PenguinProgram  penguin{};
-    CubeProgram     cube{};
-    ModelProgram iceField{};
-    ModelProgram surveyor{};
-    bool            showCube = true;
+    PenguinProgram penguin{};
+    CubeProgram    cube{};
+    ModelProgram   iceField{};
+    ModelProgram   surveyor{};
+    bool           showCube               = true;
+    bool           freeflyCameraActivated = true;
 
     // BEGINNING OF MY INIT CODE//
 
     //////loading of the textures & models
 
-    //Boidsbox
+    // Boidsbox
     Texture cubeTexture("assets/models/texture_ice.jpg", 0);
 
-    //Penguin
+    // Penguin
     Texture penguinTexture("assets/models/texture_penguin.jpg", 1);
 
     Model penguinModel("assets/models/penguin.obj");
@@ -103,7 +104,7 @@ int main()
     penguinModel.setIndices();
     penguinModel.glCode();
 
-    //Icefield
+    // Icefield
     Texture IceFieldTexture("assets/models/texture_ice.jpg", 2);
 
     Model iceFieldModel("assets/models/Icefield.obj");
@@ -111,7 +112,7 @@ int main()
     iceFieldModel.setIndices();
     iceFieldModel.glCode();
 
-    //Surveyor
+    // Surveyor
     Texture SurveyorTexture("assets/models/surveyor_orange.png", 3);
 
     Model surveyorModel("assets/models/surveyor.obj");
@@ -126,15 +127,14 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Surveyor
-    //glm::vec3 surveyorPosition = glm::vec3(0.0f, 0.0f, -2.0f);
     glm::vec3 surveyorPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
     // MVP
-    // FreeflyCamera freeViewMatrix = FreeflyCamera(); // OLD VIEW (freefly)
-    auto ViewMatrix = ThirdPersonCamera(surveyorPosition, 1.0f);
-    glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
+    FreeflyCamera freeViewMatrix  = FreeflyCamera();
+    auto          thirdViewMatrix = ThirdPersonCamera(surveyorPosition);
+    glm::mat4     ProjMatrix      = glm::perspective(glm::radians(70.f), window_width / static_cast<float>(window_height), 0.1f, 100.f);
 
-    //For the surveyor
+    // For the surveyor
     glm::mat4 MVMatrix_surveyor;
     glm::mat4 NormalMatrix_surveyor;
 
@@ -189,32 +189,40 @@ int main()
     ctx.update = [&]() {
         createGuiFromParams(&small_boid_params, "Small Boids");
         createMainGui(&environment_params);
-        ImGui::Begin("The Cube");
-        ImGui::Checkbox("Display", &showCube);
+        ImGui::Begin("Other parameters");
+        ImGui::Checkbox("Display the cube", &showCube); // freeflyCameraActivated
+        ImGui::Checkbox("Freefly camera", &freeflyCameraActivated);
         ImGui::End();
 
+        // Surveryor control
+        float     camSpeed = 0.01f;
+        glm::vec3 moveOffset(0.0f, 0.0f, 0.0f);
         if (Z)
         {
-            // ViewMatrix.moveFront(0.1);
-            surveyorPosition.z -= 0.01;
+            freeViewMatrix.moveFront(camSpeed);
+            moveOffset.z -= camSpeed;
         }
         if (D)
         {
-            // ViewMatrix.moveLeft(0.1);
-            surveyorPosition.x -= 0.01;
+            freeViewMatrix.moveLeft(camSpeed);
+            moveOffset.x -= camSpeed;
         }
         if (S)
         {
-            // ViewMatrix.moveFront(-0.1);
-            surveyorPosition.z += 0.01;
+            freeViewMatrix.moveFront(-camSpeed);
+            moveOffset.z += camSpeed;
         }
         if (Q)
         {
-            // ViewMatrix.moveLeft(-0.1);
-            surveyorPosition.x += 0.01;
+            freeViewMatrix.moveLeft(-camSpeed);
+            moveOffset.x += camSpeed;
         }
 
-        ViewMatrix.update(surveyorPosition);
+        surveyorPosition += moveOffset;
+        thirdViewMatrix.update(surveyorPosition);
+
+        glm::mat4 freeMVMatrix  = freeViewMatrix.getViewMatrix();
+        glm::mat4 thirdMVMatrix = thirdViewMatrix.getViewMatrix();
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -227,7 +235,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, cubeTexture.getTextureID());
         glUniform1i(cube.uTextureCube, 0);
 
-        MVMatrix_cube               = ViewMatrix.getViewMatrix();
+        MVMatrix_cube               = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
         glm::mat4 NormalMatrix_cube = glm::transpose(glm::inverse(MVMatrix_cube));
 
         glUniformMatrix4fv(cube.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix_cube));
@@ -246,7 +254,8 @@ int main()
         glUniform1i(iceField.uTexture, 2);
 
         iceFieldModel.bindVertexArray();
-        MVMatrix_ice               = ViewMatrix.getViewMatrix();
+
+        MVMatrix_ice               = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
         MVMatrix_ice               = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
         MVMatrix_ice               = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 2.0f));
         glm::mat4 NormalMatrix_ice = glm::transpose(glm::inverse(MVMatrix_ice));
@@ -254,7 +263,7 @@ int main()
 
         iceFieldModel.debindVertexArray();
 
-        //surveyor
+        // surveyor
         surveyor.m_Program.use();
 
         glActiveTexture(GL_TEXTURE3);
@@ -262,15 +271,18 @@ int main()
         glUniform1i(surveyor.uTexture, 3);
 
         surveyorModel.bindVertexArray();
-        MVMatrix_surveyor           = ViewMatrix.getViewMatrix();
-        MVMatrix_surveyor = glm::translate(glm::mat4(1.0f), surveyorPosition);
-        MVMatrix_surveyor = glm::rotate(MVMatrix_surveyor, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        MVMatrix_surveyor              = glm::scale(MVMatrix_surveyor, glm::vec3(1.0f / 20.0f));
+
+        MVMatrix_surveyor = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
+        // MVMatrix_surveyor = glm::translate(MVMatrix_surveyor, surveyorPosition);
+        MVMatrix_surveyor = glm::translate(glm::mat4(1.0f), surveyorPosition); // original
+        MVMatrix_surveyor = glm::translate(MVMatrix_surveyor, surveyorPosition);
+
+        // MVMatrix_surveyor               = glm::rotate(MVMatrix_surveyor, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        MVMatrix_surveyor               = glm::scale(MVMatrix_surveyor, glm::vec3(1.0f / 20.0f));
         glm::mat4 NormalMatrix_surveyor = glm::transpose(glm::inverse(MVMatrix_surveyor));
         drawModel(surveyor, surveyorModel.getIndices(), ProjMatrix, MVMatrix_surveyor, NormalMatrix_surveyor, Ka, Kd, Ks, Shininess);
 
         surveyorModel.debindVertexArray();
-
 
         // boids
         penguin.m_Program.use();
@@ -309,7 +321,8 @@ int main()
             glm::vec3 position = boid.getPosition();
 
             // Set the MVP matrices
-            MVMatrix_penguin     = ViewMatrix.getViewMatrix();
+            // si freefly camera
+            MVMatrix_penguin     = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
             MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
             MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             MVMatrix_penguin     = glm::translate(MVMatrix_penguin, position);                                                                                           // Translate to the position of the boid
@@ -364,9 +377,12 @@ int main()
         }
     };
 
-    ctx.mouse_dragged = [&ViewMatrix](const p6::MouseDrag& button) {
-        ViewMatrix.rotateLeft(button.delta.x * 50);
-        ViewMatrix.rotateUp(-button.delta.y * 50);
+    ctx.mouse_dragged = [&freeViewMatrix, &thirdViewMatrix](const p6::MouseDrag& button) {
+        freeViewMatrix.rotateLeft(button.delta.x * 50);
+        freeViewMatrix.rotateUp(button.delta.y * 50);
+
+        thirdViewMatrix.rotateLeft(button.delta.x * 50);
+        thirdViewMatrix.rotateUp(button.delta.y * 50);
     };
 
     ctx.start();

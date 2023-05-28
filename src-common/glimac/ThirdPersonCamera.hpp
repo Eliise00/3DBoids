@@ -1,9 +1,5 @@
-//
-// Created by elise on 06/04/2023.
-//
-
-#ifndef OPENGL_TPS_TEMPLATE_THIRDPERSONCAMERA_HPP
-#define OPENGL_TPS_TEMPLATE_THIRDPERSONCAMERA_HPP
+#ifndef OPENGL_TPS_TEMPLATE_THIRDPERSONCAMERA_H
+#define OPENGL_TPS_TEMPLATE_THIRDPERSONCAMERA_H
 #include <glm/glm.hpp>
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
@@ -11,100 +7,55 @@
 class ThirdPersonCamera {
 public:
     glm::vec3 m_targetPos;
-    float     m_distanceFromTarget;
-    glm::vec3 m_Position;
-    float     m_Phi;
-    float     m_Theta;
-    glm::vec3 m_FrontVector;
-    glm::vec3 m_LeftVector;
-    glm::vec3 m_UpVector;
+    float     m_Distance;
+    float     m_AngleX;
+    float     m_AngleY;
 
-    ThirdPersonCamera(glm::vec3 targetPos, float distanceFromTarget)
+    ThirdPersonCamera(glm::vec3 targetPos)
+        : m_targetPos(targetPos), m_Distance(2.0f), m_AngleX(0.0f), m_AngleY(0.0f)
     {
-        m_targetPos          = targetPos;
-        m_distanceFromTarget = distanceFromTarget;
-        m_Position           = glm::vec3(0.0f, 0.0f, 0.0f);
-        m_Phi                = glm::pi<float>(); // yaw
-        m_Theta              = 0.0f;             // pitch
-
-        computeDirectionVectors();
     }
 
-    void moveLeft(float t)
+    void moveFront(float delta)
     {
-        m_Position += t * m_LeftVector;
+        m_Distance += delta;
     }
-
-    void moveFront(float t)
-    {
-        m_Position += t * m_FrontVector;
-    }
-
     void rotateLeft(float degrees)
     {
-        float radians = glm::radians(degrees);
-        m_Phi += radians;
+        m_AngleX += degrees;
     }
-
     void rotateUp(float degrees)
     {
-        float radians = glm::radians(degrees);
-        m_Theta += radians;
+        m_AngleY += degrees;
     }
 
     void update(glm::vec3 targetPos)
     {
-        m_targetPos      = targetPos;
-        float h_distance = calculateHorizontalDistance();
-        float v_distance = calculateVerticalDistance();
-        calculateCameraPosition(h_distance, v_distance);
-        computeDirectionVectors();
+        m_targetPos = targetPos;
+        targetPos.z -= 0.2f;
     }
 
     glm::mat4 getViewMatrix() const
     {
-        return glm::lookAt(m_Position, m_Position + m_FrontVector, m_UpVector);
-    }
+        // Convertir les angles en radians
+        float angleX_rad = glm::radians(m_AngleX);
+        float angleY_rad = glm::radians(m_AngleY);
 
-    glm::vec3 getPosition() const
-    {
-        return m_Position;
-    }
+        // Calculer les coordonnées de la position de la caméra
+        float camPosX = m_Distance * sin(angleX_rad) * cos(angleY_rad);
+        float camPosY = m_Distance * sin(angleY_rad);
+        float camPosZ = m_Distance * cos(angleX_rad) * cos(angleY_rad);
 
-private:
-    void computeDirectionVectors()
-    {
-        m_FrontVector = glm::vec3(glm::cos(m_Theta) * glm::sin(m_Phi), glm::sin(m_Theta), glm::cos(m_Theta) * glm::cos(m_Phi));
-        m_LeftVector  = glm::vec3(glm::sin(m_Phi + glm::pi<float>() / 2.0f), 0., glm::cos(m_Phi + glm::pi<float>() / 2.0f));
-        m_UpVector    = glm::cross(m_LeftVector, m_FrontVector);
-        ;
-    }
+        // Construire la matrice de vue
+        glm::vec3 cameraPosition(camPosX, camPosY, camPosZ);
+        glm::mat4 viewMatrix(1.0f);
+        viewMatrix = glm::rotate(viewMatrix, angleX_rad, glm::vec3(0.0f, 1.0f, 0.0f));
+        viewMatrix = glm::rotate(viewMatrix, angleY_rad, glm::vec3(cos(angleX_rad), 0.0f, sin(angleX_rad)));
+        viewMatrix = glm::translate(viewMatrix, -cameraPosition);
+        viewMatrix = glm::translate(viewMatrix, -m_targetPos);
 
-    float calculateHorizontalDistance()
-    {
-        return m_distanceFromTarget * glm::cos(m_Theta);
-    }
-
-    float calculateVerticalDistance()
-    {
-        return m_distanceFromTarget * glm::sin(m_Theta);
-    }
-
-    void calculateCameraPosition(float h_distance, float v_distance)
-    {
-        float offsetX = h_distance * glm::sin(m_Phi);
-        float offsetZ = h_distance * glm::cos(m_Phi);
-
-        m_Position.x = m_targetPos.x - offsetX;
-        m_Position.z = m_targetPos.x - offsetZ;
-
-        //test Elise
-        //m_Position.x = m_targetPos.x + offsetX;
-        //m_Position.z = m_targetPos.z + offsetZ;
-
-
-        m_Position.y = m_targetPos.y + v_distance;
+        return viewMatrix;
     }
 };
 
-#endif // OPENGL_TPS_TEMPLATE_THIRDPERSONCAMERA_HPP
+#endif // OPENGL_TPS_TEMPLATE_THIRDPERSONCAMERA_H
