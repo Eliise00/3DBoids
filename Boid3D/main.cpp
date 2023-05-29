@@ -205,7 +205,7 @@ int main()
 
         // Cube
         if (showBoidsbox)
-            drawCube(1.5 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2.);
+            drawCube(2.0 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2.);
 
         // Ice Field
         iceField.m_Program.use();
@@ -218,7 +218,7 @@ int main()
 
         MVMatrix_ice               = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
         MVMatrix_ice               = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
-        MVMatrix_ice               = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 2.0f));
+        MVMatrix_ice               = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 4.0f));
         glm::mat4 NormalMatrix_ice = glm::transpose(glm::inverse(MVMatrix_ice));
         drawModel(iceField, iceFieldModel.getIndices(), ProjMatrix, MVMatrix_ice, NormalMatrix_ice);
 

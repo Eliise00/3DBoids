@@ -62,7 +62,7 @@ int main()
     //////Texture
 
     GLuint textureID = 0;
-    const auto textureCube = p6::load_image_buffer("assets/models/texture_cube_test.jpg");
+    const auto textureCube = p6::load_image_buffer("assets/models/BakeTest.jpg");
 
     glGenTextures(1, &textureID);
     glActiveTexture(GL_TEXTURE0);
@@ -83,7 +83,7 @@ int main()
 
     std::string warn, err;
 
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, nullptr, &warn, &err, "assets/models/cube_test.obj");
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, nullptr, &warn, &err, "assets/models/penguinNewTest.obj");
     if (!warn.empty()) {
         std::cout << "Warning: " << warn << std::endl;
     }
@@ -99,7 +99,7 @@ int main()
     std::vector<glimac::ShapeVertex> vertices;
     ////// 8 IS THE NUMBER OF VERTICES //////
     ////// TOD0 : CHANGE THIS NUMBER FOR PENGUIN
-    for (int i=0; i<8; i++){
+    for (int i=0; i<3561; i++){
         glimac::ShapeVertex newVertex = glimac::ShapeVertex(
 
             // POSITION
