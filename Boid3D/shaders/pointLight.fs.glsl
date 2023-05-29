@@ -7,8 +7,9 @@ in vec2 vTexCoords;
 
 out vec4 fFragColor;
 
-uniform vec3 uKa;
+uniform sampler2D uTexture;
 
+uniform vec3 uKa;
 uniform vec3 uKd;
 uniform vec3 uKs;
 uniform float uShininess;
@@ -31,5 +32,8 @@ vec3 blinnPhong() {
 }
 
 void main() {
-    fFragColor = vec4(blinnPhong(), 1);
+    vec4 texColor = texture(uTexture, vTexCoords);
+    vec3 lighting = blinnPhong();
+    vec4 finalColor = vec4(texColor.rgb, texColor.a) * vec4(lighting, 1.0);
+    fFragColor = finalColor;
 }

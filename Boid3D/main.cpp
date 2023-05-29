@@ -53,7 +53,7 @@ int main()
     ModelProgram   iceField{};
     ModelProgram   surveyor{};
     // GUI VARIABLES
-    bool showBoidsbox           = true;
+    bool showBoidsbox           = false;
     bool freeflyCameraActivated = true;
 
     // LOADING OF THE TEXTURES & MODELS //
@@ -181,6 +181,7 @@ int main()
         surveyorPosition += moveOffset;
         thirdViewMatrix.update(surveyorPosition);
 
+
         // CAMERAS MVMATRIXES //
         glm::mat4 freeMVMatrix  = freeViewMatrix.getViewMatrix();
         glm::mat4 thirdMVMatrix = thirdViewMatrix.getViewMatrix();
@@ -216,9 +217,16 @@ int main()
 
         iceFieldModel.bindVertexArray();
 
+
         MVMatrix_ice               = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
-        MVMatrix_ice               = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
-        MVMatrix_ice               = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 4.0f));
+        MVMatrix_ice     = glm::rotate(MVMatrix_ice, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        if (!freeflyCameraActivated)
+        {
+            MVMatrix_ice = glm::rotate(MVMatrix_ice, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        }
+        MVMatrix_ice = glm::translate(MVMatrix_ice, glm::vec3(0.0f, 1.6f, 0.0f));
+        MVMatrix_ice = glm::scale(MVMatrix_ice, glm::vec3(1.0f / 4.0f));
+
         glm::mat4 NormalMatrix_ice = glm::transpose(glm::inverse(MVMatrix_ice));
         drawModel(iceField, iceFieldModel.getIndices(), ProjMatrix, MVMatrix_ice, NormalMatrix_ice);
 
@@ -236,10 +244,12 @@ int main()
 
             surveyorModel.bindVertexArray();
             MVMatrix_surveyor = thirdMVMatrix;
+
             MVMatrix_surveyor = glm::translate(glm::mat4(1.0f), surveyorPosition);
             MVMatrix_surveyor = glm::translate(MVMatrix_surveyor, surveyorPosition);
 
-            // MVMatrix_surveyor               = glm::rotate(MVMatrix_surveyor, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            //MVMatrix_surveyor = glm::rotate(MVMatrix_surveyor, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
             MVMatrix_surveyor               = glm::scale(MVMatrix_surveyor, glm::vec3(1.0f / 20.0f));
             glm::mat4 NormalMatrix_surveyor = glm::transpose(glm::inverse(MVMatrix_surveyor));
             drawModel(surveyor, surveyorModel.getIndices(), ProjMatrix, MVMatrix_surveyor, NormalMatrix_surveyor);
@@ -272,8 +282,11 @@ int main()
 
             // Set the MVP matrices
             MVMatrix_penguin     = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
-            MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            if (freeflyCameraActivated)
+            {
+                MVMatrix_penguin = glm::rotate(MVMatrix_penguin, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            }
             MVMatrix_penguin     = glm::translate(MVMatrix_penguin, position);                                                                                           // Translate to the position of the boid
             MVMatrix_penguin     = glm::scale(MVMatrix_penguin, glm::vec3(small_boid_params.draw_radius, small_boid_params.draw_radius, small_boid_params.draw_radius)); // Scale to the appropriate radius for your boids
             NormalMatrix_penguin = glm::transpose(glm::inverse(MVMatrix_penguin));

@@ -37,16 +37,16 @@ public:
 
     glm::mat4 getViewMatrix() const
     {
-        // Convertir les angles en radians
+        // Convert angles to radians
         float angleX_rad = glm::radians(m_AngleX);
         float angleY_rad = glm::radians(m_AngleY);
 
-        // Calculer les coordonnées de la position de la caméra
+        // Calculate camera position coordinates
         float camPosX = m_Distance * sin(angleX_rad) * cos(angleY_rad);
         float camPosY = m_Distance * sin(angleY_rad);
         float camPosZ = m_Distance * cos(angleX_rad) * cos(angleY_rad);
 
-        // Construire la matrice de vue
+        // Build the view matrix
         glm::vec3 cameraPosition(camPosX, camPosY, camPosZ);
         glm::mat4 viewMatrix(1.0f);
         viewMatrix = glm::rotate(viewMatrix, angleX_rad, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -56,6 +56,7 @@ public:
 
         return viewMatrix;
     }
+
 };
 
 #endif // OPENGL_TPS_TEMPLATE_THIRDPERSONCAMERA_H

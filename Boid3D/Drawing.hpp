@@ -17,8 +17,8 @@ void drawPenguin(int i, const PenguinProgram& penguinProgram, const std::vector<
     glUniform3fv(penguinProgram.uKd, 1, glm::value_ptr(Kd[i]));
     glUniform3fv(penguinProgram.uKs, 1, glm::value_ptr(Ks[i]));
     glUniform1f(penguinProgram.uShininess, Shininess[i]);
-    glUniform3fv(penguinProgram.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, -1, -1)));
-    glUniform3fv(penguinProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(1, 1, 1)));
+    glUniform3fv(penguinProgram.uLightPos_vs, 1, glm::value_ptr(glm::vec3(-1, 1, -1)));
+    glUniform3fv(penguinProgram.uLightIntensity, 1, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 }
