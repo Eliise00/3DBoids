@@ -159,28 +159,35 @@ int main()
         glm::vec3 moveOffset(0.0f, 0.0f, 0.0f);
         if (Z)
         {
-            freeViewMatrix.moveFront(camSpeed);
-            moveOffset.z -= camSpeed;
+            if (freeflyCameraActivated)
+                freeViewMatrix.moveFront(camSpeed);
+            else
+                moveOffset.z -= camSpeed;
         }
         if (D)
         {
-            freeViewMatrix.moveLeft(camSpeed);
-            moveOffset.x -= camSpeed;
+            if (freeflyCameraActivated)
+                freeViewMatrix.moveLeft(camSpeed);
+            else
+                moveOffset.x -= camSpeed;
         }
         if (S)
         {
-            freeViewMatrix.moveFront(-camSpeed);
-            moveOffset.z += camSpeed;
+            if (freeflyCameraActivated)
+                freeViewMatrix.moveFront(-camSpeed);
+            else
+                moveOffset.z += camSpeed;
         }
         if (Q)
         {
-            freeViewMatrix.moveLeft(-camSpeed);
-            moveOffset.x += camSpeed;
+            if (freeflyCameraActivated)
+                freeViewMatrix.moveLeft(-camSpeed);
+            else
+                moveOffset.x += camSpeed;
         }
 
         surveyorPosition += moveOffset;
         thirdViewMatrix.update(surveyorPosition);
-
 
         // CAMERAS MVMATRIXES //
         glm::mat4 freeMVMatrix  = freeViewMatrix.getViewMatrix();
@@ -217,9 +224,8 @@ int main()
 
         iceFieldModel.bindVertexArray();
 
-
-        MVMatrix_ice               = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
-        MVMatrix_ice     = glm::rotate(MVMatrix_ice, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        MVMatrix_ice = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
+        MVMatrix_ice = glm::rotate(MVMatrix_ice, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         if (!freeflyCameraActivated)
         {
             MVMatrix_ice = glm::rotate(MVMatrix_ice, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -248,7 +254,7 @@ int main()
             MVMatrix_surveyor = glm::translate(glm::mat4(1.0f), surveyorPosition);
             MVMatrix_surveyor = glm::translate(MVMatrix_surveyor, surveyorPosition);
 
-            //MVMatrix_surveyor = glm::rotate(MVMatrix_surveyor, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            // MVMatrix_surveyor = glm::rotate(MVMatrix_surveyor, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
             MVMatrix_surveyor               = glm::scale(MVMatrix_surveyor, glm::vec3(1.0f / 20.0f));
             glm::mat4 NormalMatrix_surveyor = glm::transpose(glm::inverse(MVMatrix_surveyor));
@@ -281,8 +287,8 @@ int main()
             glm::vec3 position = boid.getPosition();
 
             // Set the MVP matrices
-            MVMatrix_penguin     = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
-            MVMatrix_penguin     = glm::rotate(MVMatrix_penguin, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            MVMatrix_penguin = freeflyCameraActivated ? freeMVMatrix : thirdMVMatrix;
+            MVMatrix_penguin = glm::rotate(MVMatrix_penguin, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             if (freeflyCameraActivated)
             {
                 MVMatrix_penguin = glm::rotate(MVMatrix_penguin, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -340,12 +346,17 @@ int main()
         }
     };
 
-    ctx.mouse_dragged = [&freeViewMatrix, &thirdViewMatrix](const p6::MouseDrag& button) {
-        freeViewMatrix.rotateLeft(button.delta.x * 50);
-        freeViewMatrix.rotateUp(button.delta.y * 50);
-
-        thirdViewMatrix.rotateLeft(button.delta.x * 50);
-        thirdViewMatrix.rotateUp(button.delta.y * 50);
+    ctx.mouse_dragged = [&freeViewMatrix, &thirdViewMatrix, &freeflyCameraActivated](const p6::MouseDrag& button) {
+        if (freeflyCameraActivated)
+        {
+            freeViewMatrix.rotateLeft(button.delta.x * 50);
+            freeViewMatrix.rotateUp(button.delta.y * 50);
+        }
+        else
+        {
+            thirdViewMatrix.rotateLeft(button.delta.x * 50);
+            thirdViewMatrix.rotateUp(button.delta.y * 50);
+        }
     };
 
     ctx.start();
