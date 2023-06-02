@@ -213,7 +213,7 @@ int main()
 
         // Cube
         if (showBoidsbox)
-            drawCube(2.0 + environment_params.screen_margin, 1.5 + environment_params.screen_margin, 2.);
+            drawCube(2.0 + environment_params.screen_margin, 1.7 + environment_params.screen_margin, 2.);
 
         // Ice Field
         iceField.m_Program.use();
@@ -306,6 +306,7 @@ int main()
 
         // END OF DRAW CODE//
     };
+
 
     // INPUT MANAGEMENT //
     ctx.key_pressed = [&Z, &Q, &S, &D](const p6::Key& key) {
